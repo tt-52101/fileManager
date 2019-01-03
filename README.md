@@ -38,11 +38,13 @@ How to Start:
 
 3. Run FileManagerApplication.java. And then go http://localhost:8000/fm/login.html.
 
-4.  Login with  roles below:
+4. Login with  roles below:
 
-   an administer :username: Adam	              password 123.
+   ​    as  an administer( only can get all users' information)  :    username: Adam	   password 123.
 
-    go http://localhost:8000/fm/register.html and register an account and login as a normal user.
+      or go to http://localhost:8000/fm/register.html and register an account  as a normal user and then login. 
+
+
 
 
 
