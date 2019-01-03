@@ -40,9 +40,9 @@ How to Start:
 
 4. Login with  roles below:
 
-  + as  an administer( only can get all users' information)  :    username: Adam	   password 123.
+ +  as  an administer( only can get all users' information)  :    username: Adam	   password 123.
 
-  + or go to http://localhost:8000/fm/register.html and register an account  as a normal user and then login. 
+ +  or go to http://localhost:8000/fm/register.html and register an account  as a normal user and then login. 
 
 
 
