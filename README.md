@@ -6,17 +6,17 @@
 
 Techniques:
 
-​	maven+spring boot +mybatis+jquery(ajax and dataTables) 
++maven+spring boot +mybatis+jquery(ajax and dataTables) 
 
-​	Server Paging by dataTables and PageHelper.
++Server Paging by dataTables and PageHelper.
 
 Target:
 
-​	Front-End and Back-End Separation
++Front-End and Back-End Separation
 
-​	Download and upload files.
++Download and upload files.
 
-​	server paging and simple access control.
++server paging and simple access control.
 
 ---
 
@@ -40,9 +40,9 @@ How to Start:
 
 4. Login with  roles below:
 
-   ​    as  an administer( only can get all users' information)  :    username: Adam	   password 123.
++as  an administer( only can get all users' information)  :    username: Adam	   password 123.
 
-      or go to http://localhost:8000/fm/register.html and register an account  as a normal user and then login. 
++ or go to http://localhost:8000/fm/register.html and register an account  as a normal user and then login. 
 
 
 
