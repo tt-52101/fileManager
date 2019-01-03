@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<link rel="stylesheet" type="text/css" href="css/tanchuang.css"/>
+<link rel="stylesheet" type="text/css" href="DataTables/datatables.min.css"/>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="DataTables/datatables.min.js"></script>
+<script src="js/validate.js"></script>
+
+<script>
+var currentuser;
+
+
+function timestampToTime(timestamp) {
+	if(timestamp==null)
+		{
+		return null;
+		}
+	   var date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+	   Y = date.getFullYear() + '-';
+	   M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+	   D = date.getDate() + ' ';
+	   h = date.getHours() + ':';
+	   m = date.getMinutes() + ':';
+	   s = date.getSeconds();
+	   return Y+M+D+"	"+h+m+s;
+}
+
+
+function validateLoginName2() {  
+    var id = "loginName2";  
+    var value = $("#" + id).val();
+   
+    var obj = {"loginname":""};
+    obj.loginname=value;//获取输入框内容  
+    /*  
+    * 1. 非空校验  
+    */  
+    if(!value) {  
+        /*  
+        * 获取对应的label  
+        * 添加错误信息  
+        * 显示label  
+        */  
+        $("#" + id + "Error").text("用户名不能为空！");  
+        showError($("#" + id + "Error"));  
+        return false;  
+    }  
+    /*  
+    * 2. 长度校验  
+    */  
+    if(value.length < 3 || value.length > 20) {  
+        /*  
+        * 获取对应的label  
+        * 添加错误信息  
+        * 显示label  
+        */  
+        $("#" + id + "Error").text("用户名长度必须在3 ~ 20之间！");  
+        showError($("#" + id + "Error")); 
+        return false;  
+    }
+    
+    $.ajax({
+        type: "POST",//方法类型
+        dataType: "json",//预期服务器返回的数据类型
+        url: "/checkloginname" ,//url
+        data: JSON.stringify(obj),
+        contentType:"application/json",
+        success: function (result) {        	
+        	if(result.tip!="")
+        		{
+        		   $("#" + id + "Error").text(result.tip);
+                   showError($("#" + id + "Error"));
+                   return false; 
+        		}         
+        },
+        error : function() {
+            alert("异常！");
+        }
+    });  
+    return true;  
+}  
+
+/*  
+* 登录密码校验方法  
+*/  
+function validatePassword2() {  
+    var id = "password2";  
+    var value = $("#" + id).val();//获取输入框内容  
+    /*  
+    * 1. 非空校验  
+    */  
+    if(!value) {  
+        /*  
+        * 获取对应的label  
+        * 添加错误信息  
+        * 显示label  
+        */  
+        $("#" + id + "Error").text("密码不能为空！");  
+        showError($("#" + id + "Error"));  
+        return false;  
+    }  
+    /*  
+    * 2. 长度校验  
+    */  
+    if(value.length < 3 || value.length > 20) {  
+        /*  
+        * 获取对应的label  
+        * 添加错误信息  
+        * 显示label  
+        */  
+        $("#" + id + "Error").text("密码长度必须在3 ~ 20之间！");  
+        showError($("#" + id + "Error"));  
+        return false;  
+    }  
+    return true;      
+}  
+
+/*  
+* 确认密码校验方法  
+*/  
+function validateRepassword2() {  
+    var id = "repassword2";  
+    var value = $("#" + id).val();//获取输入框内容  
+    /*  
+    * 1. 非空校验  
+    */  
+    if(!value) {  
+        /*  
+        * 获取对应的label  
+        * 添加错误信息  
+        * 显示label  
+        */  
+        $("#" + id + "Error").text("确认密码不能为空！");  
+        showError($("#" + id + "Error"));  
+        return false;  
+    }  
+    /*  
+    * 2. 两次输入是否一致校验  
+    */  
+    if(value != $("#password2").val()) {  
+        /*  
+        * 获取对应的label  
+        * 添加错误信息  
+        * 显示label  
+        */  
+        $("#" + id + "Error").text("两次输入不一致！");  
+        showError($("#" + id + "Error"));  
+        return false;  
+    }  
+    return true;      
+}
+
+function validateMobileNumber2(){
+    var id = "mobileNumber2";  
+    var value = $("#" + id).val();//获取输入框内容   
+   
+    if(!(/^1[34578]\d{9}$/.test(value))){ 
+        $("#" + id + "Error").text("电话号码错误");  
+        showError($("#" + id + "Error"));  
+        return false;  
+    }  
+    return true;      
+} 
+
+
+
+    $(function(){
+    	   $.ajax({
+               type: "POST",//方法类型
+               dataType: "json",//预期服务器返回的数据类型
+               url: "/getpsnlmsg" ,//url
+               data: null,
+               contentType:"application/json",
+               success: function (result) {
+            	   currentuser=result;
+	               	if(currentuser.id<0||currentuser.valid==0||currentuser.type==1)
+	               	{
+	               	 	window.location.href="/fm/error.html";               		
+	               	}
+	               	else
+	               	{
+	               		
+	               		init();
+	               	}
+               },
+               error : function() {
+                   alert("异常！");
+               }
+           });
+    	
+    })
+    
+    function init(){
+    	/*弹窗初始化*/
+        $('#updateOne').css("display","none");
+    	$('#addOne').css("display","none");
+        /*table初始化*/  
+        table=$('#usersInfo').DataTable( {
+        	processing: true,  //隐藏加载提示,自行处理
+            serverSide: true,  //启用服务器端分页
+            searching:true,  //原生搜索
+            orderMulti: false,  //启用多列排序
+            ordering: true,  //取消默认排序查询,否则复选框一列会出现小箭头
+        	"lengthMenu"://自定义分页长度
+                [ 10, 50, 100 ], 
+            "language": {
+                    "sProcessing": "处理中...",
+                    "sLengthMenu": "显示 _MENU_ 项结果",
+                    "sZeroRecords": "没有匹配结果",
+                    "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                    "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                    "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "sInfoPostFix": "",
+                    "sSearch": "搜索用户名:",
+                    "sUrl": "",
+                    "sEmptyTable": "未搜索到数据",
+                    "sLoadingRecords": "载入中...",
+                    "sInfoThousands": ",",
+                    "oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "上页",
+                        "sNext": "下页",
+                        "sLast": "末页"
+                    }
+                },               
+            "ajax": function (data, callback, settings) {
+                //封装请求参数
+                console.log(data);
+                var param={};
+                param.draw=data.draw;
+                param.start=(data.start / data.length)+1;
+                param.length=data.length;
+                param.searchval=data.search.value||"";
+                param.order=data.order[0];//根据第几列排序
+                //param.dir=data.order[0][dir]||"";//正序还是？
+                //console.log(param);
+				 //ajax请求数据
+                $.ajax({
+                    type: "POST",
+                    url: "/allusers",
+                    cache: false,  //禁用缓存
+                    data: param,  
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result);
+                        //可以加setTimeout做测试延迟效果
+                       if(result==null)
+                    	{
+                    	   window.location.href("/fm/error.html");
+                    	}
+                        //调用DataTables提供的callback方法，代表数据已封装完成并传回DataTables进行渲染
+                        //此时的数据需确保正确无误，异常判断应在执行此回调前自行处理完毕
+                        callback(result);   
+                    }
+                });
+            },
+            "dom":'lfrtip',         
+            columns: [
+                { data: "id" ,
+                	searchable:false	},
+                { data: 'loginName',
+                	orderable : false,
+                	searchable:true},
+                { data: 'password',
+                		orderable : false,
+                    	searchable:false,
+                	render:function(data,type,row){
+                		return "*******";
+                	}
+                },
+                { data: 'mobileNumber',
+                	orderable : false,
+                	searchable:false},
+                { data: 'lastLoginDate',
+                		orderable : false,
+                    	searchable:false,
+                	render: function ( data, type, row ) {
+                		return timestampToTime(data);
+                		}  
+                	},
+                { data: 'type' ,
+                		orderable : true,
+                    	searchable:false,
+                	render: function ( data, type, row ) {
+                  	  if(data=="1")
+                  	        return "员工";
+                  	  else
+                  		  return "管理员";
+                  	    }
+                },
+                { 
+                	data: 'valid' ,
+                	orderable : true,
+                	searchable:false,
+                  render: function ( data, type, row ) {
+                	  if(data=="1")
+                	        return "在职";
+                	  else
+                		  return "离职";
+                	    }
+                },    
+            ]
+	       
+        } );
+      
+        
+        /*更新弹窗的赋值
+        1.弹窗以及内容数据初始化*/    
+        $('#usersInfo tbody').on( 'click', 'tr', function () {
+            if (! $(this).hasClass('selected') ) {              
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+            $("#updateOne .errorClass").each(function() {  
+                showError($(this));//遍历每个元素，使用每个元素来调用showError方法  
+            }); 
+            data = table.row( this ).data();
+            dataOfTable=data;//全局变量
+            $('#id').val(data.id);
+            $('#idshow').val(data.id);
+            $('#loginName').val(data.loginName);
+            $('#mobileNumber').val(data.mobileNumber);
+            $('#showpwd').attr("disabled",false);
+            $('#showpwd').val(data.password);
+            $('#password').val(data.password);
+            $('#showpwd').attr("disabled",true);
+            $('#type').val(data.type);
+            $('#valid').val(data.valid);
+            $('#updateOne').css("display","block");
+        } );
+
+        /*弹窗
+       2.关闭*/ 
+        $(".close").click(function(){
+            $('#updateOne').css("display","none");
+            $('#addOne').css("display","none");
+            $('.errorClass').empty();
+        })
+ 
+    /*弹窗
+       2.点其他的地方关闭*/
+        window.onclick = function(event) {
+            if (event.target== document.getElementById('updateOne')) {
+                $('#updateOne').css("display","none");
+                $('#addOne').css("display","none");
+                $('.errorClass').empty();
+            }
+        }
+        
+        /*更新弹窗中
+        3.更改数据的校验*/
+        $('#updateOne .inputClass').change(function (){        	
+        	var id = $(this).attr("id");//获取当前输入框的id
+        	var val=$(this).val();
+        	if(id=="loginName" && val!=currentuser.loginName ){
+        		       		
+        		eval(funName);//执行函数调用
+        	}        	
+        		if(id!="loginName"&&id!="valid" && id!="type")
+	            {
+	        		var funName = "validate" + id.substring(0,1).toUpperCase() + id.substring(1) + "()";//得到对应的校验函数名  
+	                eval(funName);//执行函数调用  
+	            }        	
+        })
+        
+        /*注册弹窗中
+        3.更改数据的校验*/
+        $('#addOne .inputClass').blur(function() {  
+            var id = $(this).attr("id");//获取当前输入框的id  
+            var funName = "validate" + id.substring(0,1).toUpperCase() + id.substring(1) + "()";//得到对应的校验函数名  
+            eval(funName);//执行函数调用  
+        });  
+        
+     /*弹窗，
+        5.input获取焦点，error信息的清空*/  
+     $(".inputClass").focus(function() {  
+         var labelId = $(this).attr("id") + "Error";//通过输入框找到对应的label的id  
+         $("#" + labelId).text("");//把label的内容清空！  
+         showError($("#" + labelId));//隐藏没有信息的label  
+     });
+      
+
+                                       
+    }
+
+    function resetPwd()
+    {
+        $('#showpwd').attr("disabled",false);
+        $('#showpwd').val("123");
+        $('#password').val("123");
+        $('#showpwd').attr("disabled",true);
+    }
+
+    function update()
+    {
+    	var newdata=$(".update").serializeObject();
+                $.ajax({
+                        type: "POST",//方法类型
+                        dataType: "json",//预期服务器返回的数据类型
+                        url: "/update" ,//url
+                        data: JSON.stringify(newdata),
+                        contentType:"application/json",
+                        success: function (result) {
+                        	alert(result.tip);                        	
+                        },
+                        error : function() {
+                            alert("异常！");
+                        }
+                    });                                
+                
+                $('#usersInfo tr.selected td').each(function(index,element) {                	
+                	switch(index)
+                	{
+                	case(1):
+                		if(newdata.loginName!=null)
+                		{
+                			element.innerHTML=newdata.loginName;
+                			dataOfTable.loginName=newdata.loginName;
+                		}
+                	break;
+                	case(2):
+                		if(newdata.password=="123")
+                		{
+                			element.innerHTML=newdata.password;
+                			dataOfTable.password=newdata.password;
+                		}
+                		
+                	break;
+                	case(3):
+                		if(newdata.mobileNumber!=null)
+                    	{
+                			element.innerHTML=newdata.mobileNumber;
+                			dataOfTable.mobileNumber=newdata.mobileNumber;
+                    	}
+                	break;
+                	case(5):
+                		if(newdata.type=="1")
+                		{
+                			element.innerHTML="员工";
+                			dataOfTable.type=newdata.type;
+                		}
+                		
+                		if(newdata.type=="0")
+                		{
+                			element.innerHTML="管理员";
+                			dataOfTable.type=newdata.type;
+                		}
+                		
+                	break;
+                	case(6):
+                		if(newdata.valid=="1")
+                		{
+                			element.innerHTML="在职";
+                			dataOfTable.valid=newdata.valid;
+                		}
+                		
+                		if(newdata.valid=="0")
+                		{
+                			element.innerHTML="离职";
+                			dataOfTable.valid=newdata.valid;
+                		}
+                		
+                	break;
+                	}                
+                });
+                
+                table.$('tr.selected').removeClass('selected');
+                $('#updateOne').css("display","none");
+                $('.errorClass').empty();
+    }
+    
+    
+    
+    
+    $.fn.serializeObject = function() {
+        var o = {};//o is a object 
+        var a = this.serializeArray();//this是$("#registForm")对象
+        $.each(a, function() {
+                if (o[this.name] != undefined ) {//有name相同的项的时候
+                    //Array.prototype.push,判断是不是存的[]
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    //Appends the arguments to the end of the array 
+                    o[this.name].push(this.value || '');
+                } else {
+                     o[this.name] = this.value || '';
+                     
+                }
+            
+        });
+        return o;
+    };
+    
+    $.fn.dataTable.ext.errMode = 'none'; 
+	
+   function add(){
+	   $('#addOne').css("display","block");
+   }
+   
+   function sbmt(){
+   	 var bool = true;//表示校验通过  
+   	        if(!validateLoginName2()) {  
+   	            bool = false;  
+   	        }  
+   	        if(!validatePassword2()) {  
+   	            bool = false;  
+   	        }  
+   	        if(!validateRepassword2()) {  
+   	            bool = false;  
+   	        }
+   	        if(!validateMobileNumber2()) {  
+   	            bool = false;  
+   	        }              
+   	        if(bool==true)
+   	        {
+   	        	
+   	        	$.ajax({
+                    type: "POST",//方法类型
+                    dataType: "json",//预期服务器返回的数据类型
+                    url: "/register" ,//url
+                    data: JSON.stringify($("#registForm").serializeObject()),
+                    contentType:"application/json",
+                    success: function (result) {                    	                    	
+                    	var obj={};
+                    	obj.pid=0;
+                    	obj.foldername=result.loginName;
+                    	obj.owner=result.loginName;
+                    	obj.basedir="E:\\test";
+                    	obj.regaccount=result.loginName;   	            
+                    	obj.description="无";
+                    	obj.valid=1;
+                    	
+                    	//创建用户的文件夹
+                    	$.ajax({
+                    		type: "POST",//方法类型
+     	                    dataType: "json",//预期服务器返回的数据类型
+     	                    url: "/xinjian" ,//url
+     	                    data: JSON.stringify(obj),
+     	                    contentType:"application/json",
+     	                   success:function(){
+     	                	 window.location.href="/fm/allusers.html";
+     	                   },
+     	                  error : function() {
+     	                	 window.location.href="/fm/allusers.html";
+    	                    }
+                    	})
+                    	
+                    	
+                    },
+                    error : function() {
+                        alert("异常！");
+                    }
+                });
+   	        }      
+   	}
+
+    
+</script>
+<body>
+<button onclick="add()">添加</button>		
+    <table id="usersInfo" class="display" cellspacing="0">
+            <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>用户名</th>
+                        <th>密码</th>
+                        <th>电话</th>
+                        <th>上次登录时间</th>
+                        <th>类型</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                 <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+    </table>
+
+    <div id="updateOne" class="modal">
+            <!-- 弹窗内容 -->
+            <div class="modal-content">
+              <span class="close">&times;</span>
+              <h1>更新</h1>
+              <form class="update">
+                    <table id="upTbl">
+                            <tr>
+                                    <td>id:</td>
+                                    <td><input  id="idshow" disabled="true"></input>
+                                    <input  type="hidden" name="id" id="id"  ></input></td>
+                            </tr>
+                        <tr>
+                            <td class="tdText">登陆名:</td>
+                            <td class="tdInput"><input class="inputClass" type="text" id="loginName"  name="loginName"  /> <font color="red">*</font></td>
+                           
+                            <td class="tdError"><label class="errorClass" id="loginNameError" ></label></td>  
+                        </tr>
+                        <tr>
+                            <td class="tdText">密码:</td>
+                            <td ><input class="inputClass" type="password" id="showpwd" disabled="true" />
+                                <input  type="hidden" name="password" id="password" />
+                                <input type="button" onclick="resetPwd()" value="重置"></input>
+                            </td>                            
+                        </tr>                       
+                        <tr>
+                            <td  class="tdText">电话:</td>
+                            <td  class="tdInput"><input class="inputClass" type="text" id="mobileNumber" name="mobileNumber"/> <font color="red">*</font></td>
+                            <td  class="tdError"> <label class="errorClass" id="mobileNumberError" ></label> </td>  
+                        </tr>
+                        <tr>
+                                <td  class="tdText">角色:</td>
+                                <td  class="tdInput">
+                                    <select id="type" name="type" class="inputClass">
+                                        <option value="1">员工</option>
+                                        <option value="0">管理员</option>
+                                    </select>
+                                </td>
+                               
+                            </tr>
+                            <tr>
+                                    <td  class="tdText">状态:</td>
+                                    <td  class="tdInput">
+                                        <select id="valid" name="valid" class="inputClass">
+                                            <option value="1">在职</option>
+                                            <option value="0">离职</option>
+                                        </select>
+                                    </td>
+                                   
+                            </tr>
+                    <!-- onclick绑定事件不能和type名称一样 -->
+                        <tr>
+                            <td>
+                           		 <input id="submitBtn" type="button" onclick="update()" value="修改"/>
+                            </td>
+                            
+                        </tr>
+                    </table>
+                </form>
+            </div>
+       </div>
+       
+       <div id="addOne" class="modal">
+            <!-- 弹窗内容 -->
+            <div class="modal-content">
+              <span class="close">&times;</span>
+                <h1>注册</h1>
+				    <form id="registForm">
+				        <table>
+				            <tr>
+				                <td class="tdText">登陆名:</td>
+				                <td class="tdInput"><input class="inputClass" type="text"  id="loginName2"  name="loginName" /> <font color="red">*</font></td>
+				               
+				                <td class="tdError"><label class="errorClass" id="loginName2Error" ></label></td>  
+				            </tr>
+				            <tr>
+				                <td class="tdText">密码:</td>
+				                <td class="tdInput"><input class="inputClass" type="password" id="password2" name="password" /> <font color="red">*</font></td>
+				                <td class="tdError"><label class="errorClass" id="password2Error" ></label></td>  
+				            </tr>
+				            <tr>
+				                <td class="tdText">再次输入密码:</td>
+				                <td class="tdInput"><input class="inputClass" type="password" id="repassword2" name="repassword"/> <font color="red">*</font></td>
+				                <td class="tdError"><label class="errorClass" id="repassword2Error" ></label></td>  
+				            </tr>
+				            <tr>
+				                <td  class="tdText">电话:</td>
+				                <td  class="tdInput"><input class="inputClass" type="text" id="mobileNumber2" name="mobileNumber"/> <font color="red">*</font></td>
+				                <td  class="tdError"> <label class="errorClass" id="mobileNumber2Error" ></label> </td>  
+				            </tr>
+				        <!-- onclick绑定事件不能和type名称一样 -->
+				            <tr><td><input type="button"  onclick="sbmt()" value="注册"></input></td></tr>
+				            </table>
+				    </form>
+              </div>
+           </div>
+       
+        
+</body>
+</html>

@@ -1,0 +1,16 @@
+server:
+  port: 8000
+spring:  application:    name: fm
+  jackson:    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+logging:  file: logs/fm.log
+  level:    root: info
+    org.apache.ibatis: debug
+    java.sql.Connection: debug
+    java.sql.Statement: debug
+    java.sql.PreparedStatement: debug
+    com.alibaba.druid.sql: debug
+    com.alibaba.druid.proxy.jdbc: info
+    druid.sql: info
+    cn.cs.fileManager: debug

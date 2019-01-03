@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+  <context id="fmContext">
+    <jdbcConnection connectionURL="jdbc:mysql://localhost:3306/hibikidb?useSSL=false&amp;characterEncoding=UTF-8&amp;serverTimezone=GMT" driverClass="com.mysql.cj.jdbc.Driver" password="hibiki_admin" userId="hibiki_admin" />
+    <javaModelGenerator targetPackage="cn.cs.fileManager.dao.model" targetProject="fileManager/src/main/java" />
+    <sqlMapGenerator targetPackage="cn.cs.fileManager.dao.mapper" targetProject="fileManager/src/main/java" />
+    <javaClientGenerator targetPackage="cn.cs.fileManager.dao.mapper" targetProject="fileManager/src/main/java" type="XMLMAPPER" />
+    <table schema="" tableName="fm_user"></table>
+    <table schema="" tableName="fm_file"></table>
+    <table schema="" tableName="fm_file_type"></table>
+    <table schema="" tableName="fm_folder"></table>
+  </context>
+</generatorConfiguration>
