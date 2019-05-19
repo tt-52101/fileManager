@@ -5,147 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/validate.js"></script>
-    <script>
-    $.fn.serializeObject = function() {
-        var o = {};//o is a object 
-        var a = this.serializeArray();//this是$("#registForm")对象
-        $.each(a, function() {
-                if (o[this.name] != undefined && this.name!="password") {//有name相同的项的时候
-                    //Array.prototype.push,判断是不是存的[]
-                    if (!o[this.name].push) {
-                        o[this.name] = [o[this.name]];
-                    }
-                    //Appends the arguments to the end of the array 
-                    o[this.name].push(this.value || '');
-                } else {
-                     o[this.name] = this.value || '';                     
-                }            
+    <!--<script src="js/jquery-3.3.1.min.js"></script>-->
+    <!--<script src="js/validate.js"></script>-->
+    <link rel="stylesheet" href="./res/bootstrap-3.3.7-dist/css/bootstrap.min.css" type="text/css"/>
+</head>
+
+<body>
+
+<div class="container" style="width: 40%;margin-top: 50px;">
+    <fieldset>
+        <legend>注册</legend>
+    </fieldset>
+
+    <form class="form-horizontal" id="registForm">
+        <div class="form-group">
+            <label for="loginName" class="col-md-2 control-label">登录名： </label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="loginName" name="loginName" placeholder="请输入登录名"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="password" class="col-md-2 control-label">密码： </label>
+            <div class="col-md-10">
+                <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="repassword" class="col-md-2 control-label">确认密码： </label>
+            <div class="col-md-10">
+                <input type="password" class="form-control" id="repassword" name="repassword" placeholder="请输入确认密码"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="mobileNumber" class="col-md-2 control-label">电话： </label>
+            <div class="col-md-10">
+                <input type="text" class="form-control" id="mobileNumber" name="mobileNumber" placeholder="请输入电话号码"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button id="subt" type="submit" class="btn btn-default">注册</button>
+                <button class="btn btn-primary" type="reset">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="./js/jquery-3.3.1.min.js"></script>
+<script src="./res/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script src="./res/jquery-validation-1.19.0/dist/jquery.validate.min.js"></script>
+<script src="./js/register_validate.js"></script>
+<script>
+    $.fn.serializeObject = function () {
+        var o = {};//o is a object-->
+        var a = this.serializeArray();//this是$("#registForm")对象-->
+        $.each(a, function () {
+            if (o[this.name] != undefined && this.name != "password") {//有name相同的项的时候-->
+                //Array.prototype.push,判断是不是存的[]-->
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                //Appends the arguments to the end of the array-->
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
         });
         return o;
     };
     
-    $(function() {  
-        /*  
-        * 1. 得到所有的错误信息，循环遍历之。调用一个方法来确定是否显示错误信息！  
-        */  
-    	$(".errorClass").each(function() {  
-            showError($(this));//遍历每个元素，使用每个元素来调用showError方法  
-        });  
-        
-       
-        
-        /*  
-        * 3. 输入框得到焦点隐藏错误信息  
-        */  
-        $(".inputClass").focus(function() {  
-            var labelId = $(this).attr("id") + "Error";//通过输入框找到对应的label的id  
-            $("#" + labelId).text("");//把label的内容清空！  
-            showError($("#" + labelId));//隐藏没有信息的label  
-        });  
-        
-        /*  
-        * 4. 输入框失去焦点进行校验  
-        */  
-        $(".inputClass").blur(function() {  
-            var id = $(this).attr("id");//获取当前输入框的id  
-            var funName = "validate" + id.substring(0,1).toUpperCase() + id.substring(1) + "()";//得到对应的校验函数名  
-            eval(funName);//执行函数调用  
-        });  
-        
-    });
-    
+    function sbmt() {
+        alert("sbmt ajax...");
+        $.ajax({
+            type: "POST",//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: "/register",//url
+            data: JSON.stringify($("#registForm").serializeObject()),
+            contentType: "application/json",
+            success: function (result) {
+                var obj = {};
+                obj.pid = 0;
+                obj.foldername = result.loginName;
+                obj.owner = result.loginName;
+                obj.basedir = "E:\\test";
+                obj.regaccount = result.loginName;
+                obj.description = "无";
+                obj.valid = 1;
 
-    function sbmt(){
-    	 var bool = true;//表示校验通过  
-    	        if(!validateLoginName()) {  
-    	            bool = false;  
-    	        }  
-    	        if(!validatePassword()) {  
-    	            bool = false;  
-    	        }  
-    	        if(!validateRepassword()) {  
-    	            bool = false;  
-    	        }
-    	        if(!validateMobileNumber()) {  
-    	            bool = false;  
-    	        }              
-    	        if(bool==true)
-    	        {
-    	            $.ajax({
-    	                    type: "POST",//方法类型
-    	                    dataType: "json",//预期服务器返回的数据类型
-    	                    url: "/register" ,//url
-    	                    data: JSON.stringify($("#registForm").serializeObject()),
-    	                    contentType:"application/json",
-    	                    success: function (result) {
-    	                    	
-    	                    	
-    	                    	var obj={};
-    	                    	obj.pid=0;
-    	                    	obj.foldername=result.loginName;
-    	                    	obj.owner=result.loginName;
-    	                    	obj.basedir="E:\\test";
-    	                    	obj.regaccount=result.loginName;   	            
-    	                    	obj.description="无";
-    	                    	obj.valid=1;
-    	                    	
-    	                    	//创建用户的文件夹
-    	                    	$.ajax({
-    	                    		type: "POST",//方法类型
-    	     	                    dataType: "json",//预期服务器返回的数据类型
-    	     	                    url: "/xinjian" ,//url
-    	     	                    data: JSON.stringify(obj),
-    	     	                    contentType:"application/json",
-    	     	                   success:function(){
-    	     	                	  window.location.href="/fm/login.html";
-    	     	                   },
-    	     	                  error : function() {
-    	     	                	 window.location.href="/fm/login.html";
-    	    	                    }
-    	                    	})
-    	                    	
-    	                    	
-    	                    },
-    	                    error : function() {
-    	                        alert("异常！");
-    	                    }
-    	                });
-    	        }      
-    	}
-
-    </script>
-</head>
-
-<body>
-    <h1>注册</h1>
-    <form id="registForm">
-        <table>
-            <tr>
-                <td class="tdText">登陆名:</td>
-                <td class="tdInput"><input class="inputClass" type="text" id="loginName"  name="loginName" /> <font color="red">*</font></td>
-               
-                <td class="tdError"><label class="errorClass" id="loginNameError" ></label></td>  
-            </tr>
-            <tr>
-                <td class="tdText">密码:</td>
-                <td class="tdInput"><input class="inputClass" type="password" id="password" name="password" /> <font color="red">*</font></td>
-                <td class="tdError"><label class="errorClass" id="passwordError" ></label></td>  
-            </tr>
-            <tr>
-                <td class="tdText">再次输入密码:</td>
-                <td class="tdInput"><input class="inputClass" type="password" id="repassword" name="password"/> <font color="red">*</font></td>
-                <td class="tdError"><label class="errorClass" id="repasswordError" ></label></td>  
-            </tr>
-            <tr>
-                <td  class="tdText">电话:</td>
-                <td  class="tdInput"><input class="inputClass" type="text" id="mobileNumber" name="mobileNumber"/> <font color="red">*</font></td>
-                <td  class="tdError"> <label class="errorClass" id="mobileNumberError" ></label> </td>  
-            </tr>
-        <!-- onclick绑定事件不能和type名称一样 -->
-            <tr><td><input type="button" id="submitBtn" onclick="sbmt()" value="注册"></input></td></tr>
-            </table>
-    </form>
+                //创建用户的文件夹
+                $.ajax({
+                    type: "POST",//方法类型
+                    dataType: "json",//预期服务器返回的数据类型
+                    url: "/xinjian",//url
+                    data: JSON.stringify(obj),
+                    contentType: "application/json",
+                    success: function () {
+                        window.location.href = "/fm/login.html";
+                    },
+                    error: function () {
+                        window.location.href = "/fm/login.html";
+                    }
+                })
+            },
+            error: function () {
+                alert("异常！");
+            }
+        });
+    }
+</script>
 </body>
 </html>

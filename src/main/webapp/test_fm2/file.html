@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>文件上传和下载</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8 ">
+        <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
+</script>
+<script  src="http://malsup.github.com/jquery.form.js"></script>
+        <script>
+        function shuchu(e)
+        {
+        	var i=e;
+        	console.log(i);
+        	var  suffixName = i.substring(i.lastIndexOf("."));
+        	console.log(suffixName);
+        }
+        function tranmission()
+        {
+        	var obj={};
+        	obj.id="1";
+        	obj.basedir="D:\\filemanager\\zhendong\\文档";
+        	$.ajax({
+        		type:"post",
+        		url:"/aaa",
+        		data:JSON.stringify(obj),
+        		dataType:'json',
+        		contentType:'application/json',
+        		success:function(data){
+       
+        		},
+        		error:function(){
+        			alert('shibai')
+        		}
+        	})
+        }
+        $.fn.serializeObject = function() {
+        	var o = {};
+        	var a = this.serializeArray();
+        	$.each(a, function() {
+        	if (o[this.name] !== undefined) {
+        	if (!o[this.name].push) {
+        	o[this.name] = [o[this.name]]; 
+        	}
+        	o[this.name].push(this.value || '');
+        	} else {
+        	o[this.name] = this.value || ''; 
+        	}
+        	});
+        	return o;
+        }
+        function tijiao()
+        {
+        	var options={
+        			type:'post',
+        			url:"/upload",
+        			dataType:'json',
+        			success:function(ret){
+        				var flag=ret.tip;
+        				if (flag=="a"){ alert('文件型号不匹配,文件上传失败');}
+        				if (flag=="b"){ alert('上传成功'); }			
+        				if (flag=="c"){ alert('大小超过限制,文件上传失败');}
+        			},
+        			error:function(ret){
+        				alert('cuowu')
+        			}
+        	}
+        	$("#form1").ajaxSubmit(options);
+        }
+        </script>
+    </head>
+    <body>
+        <form enctype="multipart/form-data" method="post" action="/upload"  id="form1">
+            文件：<input type="file" name="fileUpload"   />
+            <input type="button"  onclick="tranmission();tijiao()"  value="上传" />
+        </form>
+<form  enctype="multipart/form-data" action="/download" method="post">
+ 文件：
+  <input type="submit" value="下载">
+</form>
+
+
+<form  action="/download2" method="post">
+ 文件：<input type="text" name="fileName" value="9ec55283-d6a8-48d6-8633-9870b22625f8.txt"/>
+ <input type="text" name="realPath" value="D:\\filemanager\\zhendong\\文档"/>
+  <input type="text" name="filetruename" value="服务器.txt"/>
+  <input type="submit" value="下载">
+</form>
+
+
+<a href="http://localhost:8000/users">查看用户</a>
+<button onclick="tranmission()">aaa</button>
+    </body>
+</html>

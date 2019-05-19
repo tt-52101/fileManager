@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>folderlist</title>
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">  
+<link rel="stylesheet" href="./res/bootstrap-3.3.7-dist/css/bootstrap.min.css" type="text/css">
 <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="http://malsup.github.com/jquery.form.js"></script>
@@ -26,12 +26,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>                        
       </button>
-      <a class="navbar-brand" href="#">我的网盘</a>
+      <a class="navbar-brand" href="#">网盘测试版</a>
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">主页</a></li>
-        <!--  <li><a href="#">页面 2</a></li>
+         <!--<li class="active"><a href="#">主页</a></li> 
+          <li><a href="#">页面 2</a></li>
         <li><a href="#">页面 3</a></li>-->
       </ul>
     </div>
@@ -55,7 +55,7 @@
   </div>
 </div>
  
-<div class="jumbotron text-center" style="margin-bottom:0;height:80px">
+<div class="jumbotron text-center" style="margin-bottom:0;height:40px">
   <p>design by DAC intern group</p>
 </div>
 </body>
@@ -68,6 +68,7 @@ $(function(){
 	var ppid=0;
 
 	obj={};
+	
 	$.ajax({
 		  type: "POST",//方法类型
           dataType: "json",//预期服务器返回的数据类型
@@ -77,14 +78,13 @@ $(function(){
         success: function (result) {
         	//alert(result);
         	if(result.id==-1)
-        	{
-        		
+        	{        		
         		window.location.href="/fm/error.html";
         	}
             console.log(result);
             user=result.loginName;
             shengcheng(ppid,'/getAllownerfolder',user);
-        	
+            
         },
         error: function () {      
         }
@@ -383,11 +383,13 @@ function renamexian(id)
 //点击文件夹显示所有子文件夹
 function shengcheng(pid,url,owner)
 {
+	////将父ID进行保存
 	fuid(pid);
 	require(pid,url,owner);
 	show(pid);
 	dangqian(pid);
 }
+
 //请求后端数据
 function require(pid,url,owner){
 	var pidobj={"id":"","owner":""};
@@ -471,7 +473,7 @@ function dangqian(id)
        $("#dangqian").append(text);
    }
 }
-//将父ID进行保存
+//将父ID进行保存，记录从根目录到深层目录的每一步。
 function fuid(pid)
 {
 	if(pid==0){
@@ -489,7 +491,7 @@ function fuid(pid)
 //新建文件夹将内容改变显示出来
 function xinjianxian()
 {
-	//var owner='zhendong';
+	
 	var valid=1;
 	var item=sessionStorage.getItem('item');
 	if(item==0){

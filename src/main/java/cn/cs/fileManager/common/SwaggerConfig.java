@@ -25,15 +25,12 @@ public class SwaggerConfig {
         			.ignoredParameterTypes(ModelMap.class)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.nowbook.mm.common"))
-                .paths(apiPaths())
+                .apis(RequestHandlerSelectors.basePackage("cn.cs.fileManager.controller"))
+                .paths(PathSelectors.any())
                 .build();
     }
 
-    private Predicate<String> apiPaths() {
-        return Predicates.or(PathSelectors.regex("/common-api/.*"));
-    }
-
+   
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("MM Common API")

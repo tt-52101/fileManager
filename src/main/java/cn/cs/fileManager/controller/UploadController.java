@@ -100,28 +100,5 @@ public class UploadController {
 
         
         
-        
-   /*    try {
-            fileUpload.transferTo(new File(filePath+UUIDfileName));
-          try { 
-        	  this.up.getFileTypeList(suffixName); 
-            if( up.insert(fileName,fileSize,UUIDfileName))
-            {
-             // return new Massage(0,"文件上传成功");
-            	System.out.println("上传成功");
-            return null;
-            }
-            else {System.out.println("上传失败");return null;}
-              }catch(Exception e) {System.out.println("文件类型错误");return null;}
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Massage(-1,"fail to upload");
-        } 
-    }*/
   
-        
-    
-
-
-    
 }

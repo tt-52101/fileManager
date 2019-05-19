@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" type="text/css" href="css/tanchuang.css"/>
+
+<script src="js/validate.js"></script>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script>
+$(function(){
+	
+        $.ajax({
+                    type: "POST",//方法类型
+                    dataType: "json",//预期服务器返回的数据类型
+                    url: "/getpsnlmsg" ,//url
+                    data: null,
+                    contentType:"application/json",
+                    success: function (data) {
+                    	if(data==null)
+                    	{
+                    		window.location.href="/fm/error.html";
+                    	}else{
+                    		 $('#id').val(data.id);
+                             $('#idshow').val(data.id);
+                             $('#loginName').val(data.loginName);
+                             $('#mobileNumber').val(data.mobileNumber);
+                            
+                             $('#type').val(data.type);
+                             $('#valid').val(data.valid);
+                    	}
+	
+                    },
+                    error : function() {
+                    	window.location.href="/fm/error.html";
+                    }
+                });
+        /*table行选中与修改，
+        3.更改数据的校验*/
+        $('.inputClass').change(function (){        	
+        	var id = $(this).attr("id");//获取当前输入框的id  
+            var funName = "validate" + id.substring(0,1).toUpperCase() + id.substring(1) + "()";//得到对应的校验函数名  
+            eval(funName);//执行函数调用  
+        })
+        
+     /*table行选中与修改，
+        5.input获取焦点，error信息的清空*/  
+     $(".inputClass").focus(function() {  
+         var labelId = $(this).attr("id") + "Error";//通过输入框找到对应的label的id  
+         $("#" + labelId).text("");//把label的内容清空！  
+         showError($("#" + labelId));//隐藏没有信息的label  
+     });  
+    })
+    function jump()
+    {
+        history.back(-1);
+    }
+    
+function update()
+    {
+                $.ajax({
+                        type: "POST",//方法类型
+                        dataType: "json",//预期服务器返回的数据类型
+                        url: "/update" ,//url
+                        data: JSON.stringify($(".update").serializeObject()),
+                        contentType:"application/json",
+                        success: function (result) {
+                        	alert(result.tip);
+                        	window.location.href="/fm/login.html";
+                        },
+                        error : function() {
+                            alert("信息提交后，数据库更新错误！");
+                        }
+                    });
+       
+    }
+    
+    $.fn.serializeObject = function() {
+        var o = {};//o is a object 
+        var a = this.serializeArray();//this是$("#registForm")对象
+        $.each(a, function() {
+             
+                     o[this.name] = this.value || '';
+               
+        });
+        return o;
+    };
+
+</script>
+<body>
+      <form class="update">
+                    <table id="upTbl">
+                            <tr>
+                                    <td>id:</td>
+                                    <td><input  id="idshow" disabled="true"></input>
+                                    <input  type="hidden" name="id" id="id"  ></input></td>
+                            </tr>
+                        <tr>
+                            <td class="tdText">登陆名:</td>
+                            <td class="tdInput"><input class="inputClass" type="text" id="loginName"  name="loginName"  /> <font color="red">*</font></td>
+                           
+                            <td class="tdError"><label class="errorClass" id="loginNameError" ></label></td>  
+                        </tr>
+                        <tr>
+                            <td class="tdText">密码:</td>
+                            <td ><input class="inputClass" type="password" id="password" name="password"  />                               
+                            </td>                            
+                        </tr>
+                        <tr>
+			                <td class="tdText">再次输入密码:</td>
+			                <td class="tdInput"><input class="inputClass" type="password" id="repassword" name="password"/> <font color="red">*</font></td>
+			                <td class="tdError"><label class="errorClass" id="repasswordError" ></label></td>  
+			            </tr>                       
+                        <tr>
+                            <td  class="tdText">电话:</td>
+                            <td  class="tdInput"><input class="inputClass" type="text" id="mobileNumber" name="mobileNumber"/> <font color="red">*</font></td>
+                            <td  class="tdError"> <label class="errorClass" id="mobileNumberError" ></label> </td>  
+                        </tr>
+                      
+                    <!-- onclick绑定事件不能和type名称一样 -->
+                        <tr>
+                            <td>
+                           		 <input id="submitBtn" type="button" onclick="update()" value="修改"/>
+                            </td>
+                            
+                        </tr>
+                    </table>
+                </form>
+</body>
+</html>

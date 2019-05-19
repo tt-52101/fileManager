@@ -30,7 +30,8 @@ public class FileManagerApplication {
 
     }
     @Bean
-    public MultipartConfigElement multipartConfigElement() { MultipartConfigFactory factory = new MultipartConfigFactory();
+    public MultipartConfigElement multipartConfigElement() { 
+    	MultipartConfigFactory factory = new MultipartConfigFactory();
        //  单个数据大小
        factory.setMaxFileSize("10240000000KB");
        /// 总上传数据大小
