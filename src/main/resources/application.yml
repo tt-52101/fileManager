@@ -14,3 +14,4 @@ logging:  file: logs/fm.log
     com.alibaba.druid.proxy.jdbc: info
     druid.sql: info
     cn.cs.fileManager: debug
+   

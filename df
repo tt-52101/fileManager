@@ -1,0 +1,85 @@
+[1mdiff --git a/logs/fm.log b/logs/fm.log[m
+[1mindex a2ab85d..b1011be 100644[m
+[1m--- a/logs/fm.log[m
+[1m+++ b/logs/fm.log[m
+[36m@@ -1364,3 +1364,80 @@[m [mjava.lang.NullPointerException: null[m
+ 2019-05-20 16:55:23.286  INFO 6524 --- [restartedMain] o.s.b.w.servlet.ServletRegistrationBean  : Servlet dispatcherServlet mapped to [/][m
+ 2019-05-20 16:55:23.326 DEBUG 6524 --- [restartedMain] org.apache.ibatis.logging.LogFactory     : Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.[m
+ 2019-05-20 16:55:23.899  INFO 6524 --- [restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoint(s) beneath base path '/actuator'[m
+[32m+[m[32m2019-05-20 17:07:22.424  INFO 18536 --- [restartedMain] c.cs.fileManager.FileManagerApplication  : Starting FileManagerApplication on DESKTOP-MHKMK4C with PID 18536 (started by al89 in E:\工作\fileOnline)[m
+[32m+[m[32m2019-05-20 17:07:22.426 DEBUG 18536 --- [restartedMain] c.cs.fileManager.FileManagerApplication  : Running with Spring Boot v2.1.0.RELEASE, Spring v5.1.2.RELEASE[m
+[32m+[m[32m2019-05-20 17:07:22.428  INFO 18536 --- [restartedMain] c.cs.fileManager.FileManagerApplication  : No active profile set, falling back to default profiles: default[m
+[32m+[m[32m2019-05-20 17:07:22.478  INFO 18536 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable[m
+[32m+[m[32m2019-05-20 17:07:22.479  INFO 18536 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'[m
+[32m+[m[32m2019-05-20 17:07:23.583  WARN 18536 --- [restartedMain] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[cn.cs.fileManager]' package. Please check your configuration.[m
+[32m+[m[32m2019-05-20 17:07:23.827  INFO 18536 --- [restartedMain] o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'myBatisMapperScannerConfig' since its singleton instance has been created too early. The typical cause is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor return type: Consider declaring such methods as 'static'.[m
+[32m+[m[32m2019-05-20 17:07:24.080  INFO 18536 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'druidDBConfig' of type [cn.cs.fileManager.common.DruidDBConfig$$EnhancerBySpringCGLIB$$fe67903b] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)[m
+[32m+[m[32m2019-05-20 17:07:24.081  INFO 18536 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'myBatisConfig' of type [cn.cs.fileManager.common.MyBatisConfig$$EnhancerBySpringCGLIB$$abfbf60e] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)[m
+[32m+[m[32m2019-05-20 17:07:24.314  INFO 18536 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited[m
+[32m+[m[32m2019-05-20 17:07:24.315  INFO 18536 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'dataSource' of type [com.alibaba.druid.pool.DruidDataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)[m
+[32m+[m[32m2019-05-20 17:07:24.341  INFO 18536 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'spring.datasource-org.springframework.boot.autoconfigure.jdbc.DataSourceProperties' of type [org.springframework.boot.autoconfigure.jdbc.DataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)[m
+[32m+[m[32m2019-05-20 17:07:24.347  INFO 18536 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerInvoker' of type [org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerInvoker] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)[m
+[32m+[m[32m2019-05-20 17:07:24.350  INFO 18536 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'annotationDrivenTransactionManager' of type [org.springframework.jdbc.datasource.DataSourceTransactionManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)[m
+[32m+[m[32m2019-05-20 17:07:24.351  INFO 18536 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$d3476a7f] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)[m
+[32m+[m[32m2019-05-20 17:07:24.648  INFO 18536 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8000 (http)[m
+[32m+[m[32m2019-05-20 17:07:24.666  INFO 18536 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat][m
+[32m+[m[32m2019-05-20 17:07:24.667  INFO 18536 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/9.0.12[m
+[32m+[m[32m2019-05-20 17:07:24.673  INFO 18536 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: [D:\JAVA\jdk-10.0.1\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:/JAVA/jdk-10.0.1/bin/server;D:/JAVA/jdk-10.0.1/bin;D:\apache-maven-3.6.0\bin;D:\mysql5.7\mysql-5.7.23-winx64\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;D:\JAVA\jdk-10.0.1\bin;D:\JAVA\jdk-10.0.1\jre\bin;C:\Program Files\Git\cmd;D:\nodejs\;D:\python\Scripts\;D:\python\;D:\Ruby25-x64\bin;C:\Users\al89\AppData\Local\Microsoft\WindowsApps;;D:\Docker Toolbox;D:\Microsoft VS Code\bin;C:\Users\al89\AppData\Roaming\npm;D:\texlive2018\2018\bin\win32;D:\sts-4.0.1.RELEASE;;.][m
+[32m+[m[32m2019-05-20 17:07:24.758  INFO 18536 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext[m
+[32m+[m[32m2019-05-20 17:07:24.759  INFO 18536 --- [restartedMain] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 2280 ms[m
+[32m+[m[32m2019-05-20 17:07:25.212  INFO 18536 --- [restartedMain] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*][m
+[32m+[m[32m2019-05-20 17:07:25.213  INFO 18536 --- [restartedMain] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webMvcMetricsFilter' to: [/*][m
+[32m+[m[32m2019-05-20 17:07:25.213  INFO 18536 --- [restartedMain] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*][m
+[32m+[m[32m2019-05-20 17:07:25.213  INFO 18536 --- [restartedMain] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'formContentFilter' to: [/*][m
+[32m+[m[32m2019-05-20 17:07:25.213  INFO 18536 --- [restartedMain] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*][m
+[32m+[m[32m2019-05-20 17:07:25.213  INFO 18536 --- [restartedMain] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpTraceFilter' to: [/*][m
+[32m+[m[32m2019-05-20 17:07:25.213  INFO 18536 --- [restartedMain] o.s.b.w.servlet.ServletRegistrationBean  : Servlet dispatcherServlet mapped to [/][m
+[32m+[m[32m2019-05-20 17:07:25.248 DEBUG 18536 --- [restartedMain] org.apache.ibatis.logging.LogFactory     : Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.[m
+[32m+[m[32m2019-05-20 17:07:25.816  INFO 18536 --- [restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoint(s) beneath base path '/actuator'[m
+[32m+[m[32m2019-05-20 17:07:25.893  INFO 18536 --- [restartedMain] pertySourcedRequestMappingHandlerMapping : Mapped URL path [/v2/api-docs] onto method [public org.springframework.http.ResponseEntity<springfox.documentation.spring.web.json.Json> springfox.documentation.swagger2.web.Swagger2Controller.getDocumentation(java.lang.String,javax.servlet.http.HttpServletRequest)][m
+[32m+[m[32m2019-05-20 17:07:26.011  INFO 18536 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'[m
+[32m+[m[32m2019-05-20 17:07:26.056  INFO 18536 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729[m
+[32m+[m[32m2019-05-20 17:07:26.130  WARN 18536 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates or check your Thymeleaf configuration)[m
+[32m+[m[32m2019-05-20 17:07:26.411  INFO 18536 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed[m
+[32m+[m[32m2019-05-20 17:07:26.424  INFO 18536 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)[m
+[32m+[m[32m2019-05-20 17:07:26.460  INFO 18536 --- [restartedMain] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references[m
+[32m+[m[32m2019-05-20 17:07:26.605  INFO 18536 --- [restartedMain] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: shanchuUsingPOST_1[m
+[32m+[m[32m2019-05-20 17:07:26.608  INFO 18536 --- [restartedMain] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: upValidUsingPOST_1[m
+[32m+[m[32m2019-05-20 17:07:26.707  INFO 18536 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8000 (http) with context path ''[m
+[32m+[m[32m2019-05-20 17:07:26.711  INFO 18536 --- [restartedMain] c.cs.fileManager.FileManagerApplication  : Started FileManagerApplication in 4.634 seconds (JVM running for 5.929)[m
+[32m+[m[32m2019-05-20 17:07:28.523  INFO 18536 --- [http-nio-8000-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'[m
+[32m+[m[32m2019-05-20 17:07:28.524  INFO 18536 --- [http-nio-8000-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'[m
+[32m+[m[32m2019-05-20 17:07:28.541  INFO 18536 --- [http-nio-8000-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 16 ms[m
+[32m+[m[32m2019-05-20 17:07:32.391 DEBUG 18536 --- [http-nio-8000-exec-2] c.c.f.d.m.FmUserMapper.selectByExample   : ==>  Preparing: select id, login_name, password, mobile_number, last_login_date, type, valid from fm_user WHERE ( login_name = ? and password = ? )[m[41m [m
+[32m+[m[32m2019-05-20 17:07:32.554 DEBUG 18536 --- [http-nio-8000-exec-2] c.c.f.d.m.FmUserMapper.selectByExample   : ==> Parameters: Adam(String), MTIz(String)[m
+[32m+[m[32m2019-05-20 17:07:32.582 DEBUG 18536 --- [http-nio-8000-exec-2] c.c.f.d.m.FmUserMapper.selectByExample   : <==      Total: 1[m
+[32m+[m[32m2019-05-20 17:07:32.583  INFO 18536 --- [http-nio-8000-exec-2] cn.cs.fileManager.service.UserService    : 根据用户名和密码查找到用户[m
+[32m+[m[32m2019-05-20 17:07:33.014  WARN 18536 --- [http-nio-8000-exec-2] o.a.c.util.SessionIdGeneratorBase        : Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [426] milliseconds.[m
+[32m+[m[32m2019-05-20 17:07:33.016  INFO 18536 --- [http-nio-8000-exec-2] c.c.f.controller.UserController          : session创建完毕[m
+[32m+[m[32m2019-05-20 17:07:33.020 DEBUG 18536 --- [http-nio-8000-exec-2] c.c.f.d.m.F.updateByExampleSelective     : ==>  Preparing: update fm_user SET last_login_date = ? WHERE ( login_name = ? )[m[41m [m
+[32m+[m[32m2019-05-20 17:07:33.025 DEBUG 18536 --- [http-nio-8000-exec-2] c.c.f.d.m.F.updateByExampleSelective     : ==> Parameters: 2019-05-20 17:07:33.017(Timestamp), Adam(String)[m
+[32m+[m[32m2019-05-20 17:07:33.026 DEBUG 18536 --- [http-nio-8000-exec-2] c.c.f.d.m.F.updateByExampleSelective     : <==    Updates: 1[m
+[32m+[m[32m2019-05-20 17:07:33.091  INFO 18536 --- [http-nio-8000-exec-2] c.c.f.controller.UserController          : 更新登录时间成功[m
+[32m+[m[32m2019-05-20 17:07:34.568  INFO 18536 --- [http-nio-8000-exec-4] c.c.f.controller.UserController          : start:1  length: 10  draw: 1  searchval:  order by 0 asc[m
+[32m+[m[32m2019-05-20 17:07:34.569  INFO 18536 --- [http-nio-8000-exec-4] c.c.f.controller.UserController          : 获得查询所有用户信息权限[m
+[32m+[m[32m2019-05-20 17:07:34.599 DEBUG 18536 --- [http-nio-8000-exec-4] c.c.f.d.m.F.selectByExample_COUNT        : ==>  Preparing: SELECT count(0) FROM fm_user[m[41m [m
+[32m+[m[32m2019-05-20 17:07:34.602 DEBUG 18536 --- [http-nio-8000-exec-4] c.c.f.d.m.F.selectByExample_COUNT        : ==> Parameters:[m[41m [m
+[32m+[m[32m2019-05-20 17:07:34.603 DEBUG 18536 --- [http-nio-8000-exec-4] c.c.f.d.m.F.selectByExample_COUNT        : <==      Total: 1[m
+[32m+[m[32m2019-05-20 17:07:34.605 DEBUG 18536 --- [http-nio-8000-exec-4] c.c.f.d.m.FmUserMapper.selectByExample   : ==>  Preparing: select id, login_name, password, mobile_number, last_login_date, type, valid from fm_user order by id asc LIMIT ?[m[41m [m
+[32m+[m[32m2019-05-20 17:07:34.609 DEBUG 18536 --- [http-nio-8000-exec-4] c.c.f.d.m.FmUserMapper.selectByExample   : ==> Parameters: 10(Integer)[m
+[32m+[m[32m2019-05-20 17:07:34.618 DEBUG 18536 --- [http-nio-8000-exec-4] c.c.f.d.m.FmUserMapper.selectByExample   : <==      Total: 10[m
+[32m+[m[32m2019-05-20 17:07:40.378 DEBUG 18536 --- [http-nio-8000-exec-6] c.c.f.d.m.FmUserMapper.selectByExample   : ==>  Preparing: select id, login_name, password, mobile_number, last_login_date, type, valid from fm_user WHERE ( login_name = ? and password = ? )[m[41m [m
+[32m+[m[32m2019-05-20 17:07:40.378 DEBUG 18536 --- [http-nio-8000-exec-6] c.c.f.d.m.FmUserMapper.selectByExample   : ==> Parameters: lyuyu(String), MTIz(String)[m
+[32m+[m[32m2019-05-20 17:07:40.381 DEBUG 18536 --- [http-nio-8000-exec-6] c.c.f.d.m.FmUserMapper.selectByExample   : <==      Total: 1[m
+[32m+[m[32m2019-05-20 17:07:40.382  INFO 18536 --- [http-nio-8000-exec-6] cn.cs.fileManager.service.UserService    : 根据用户名和密码查找到用户[m
+[32m+[m[32m2019-05-20 17:07:40.383  INFO 18536 --- [http-nio-8000-exec-6] c.c.f.controller.UserController          : session创建完毕[m
+[32m+[m[32m2019-05-20 17:07:40.386 DEBUG 18536 --- [http-nio-8000-exec-6] c.c.f.d.m.F.updateByExampleSelective     : ==>  Preparing: update fm_user SET last_login_date = ? WHERE ( login_name = ? )[m[41m [m
+[32m+[m[32m2019-05-20 17:07:40.386 DEBUG 18536 --- [http-nio-8000-exec-6] c.c.f.d.m.F.updateByExampleSelective     : ==> Parameters: 2019-05-20 17:07:40.384(Timestamp), lyuyu(String)[m
+[32m+[m[32m2019-05-20 17:07:40.388 DEBUG 18536 --- [http-nio-8000-exec-6] c.c.f.d.m.F.updateByExampleSelective     : <==    Updates: 1[m
+[32m+[m[32m2019-05-20 17:07:40.460  INFO 18536 --- [http-nio-8000-exec-6] c.c.f.controller.UserController          : 更新登录时间成功[m
+[32m+[m[32m2019-05-20 17:07:42.119 DEBUG 18536 --- [http-nio-8000-exec-9] c.c.f.d.m.F.selectByExample              : ==>  Preparing: select id, folder_name, p_id, owner, base_dir, reg_date, reg_account, description, valid from fm_folder WHERE ( owner = ? and p_id = ? )[m[41m [m
+[32m+[m[32m2019-05-20 17:07:42.121 DEBUG 18536 --- [http-nio-8000-exec-9] c.c.f.d.m.F.selectByExample              : ==> Parameters: lyuyu(String), 0(Long)[m
+[32m+[m[32m2019-05-20 17:07:42.123 DEBUG 18536 --- [http-nio-8000-exec-9] c.c.f.d.m.F.selectByExample              : <==      Total: 1[m
+[32m+[m[32m2019-05-20 17:07:42.148 DEBUG 18536 --- [http-nio-8000-exec-10] c.c.f.d.m.FmFileMapper.selectByExample   : ==>  Preparing: select id, folder_id, file_true_name, file_name, file_size, file_type_id, ver, reg_date, reg_account, upd_date, upd_account, description, valid from fm_file WHERE ( reg_account = ? and folder_id = ? )[m[41m [m
+[32m+[m[32m2019-05-20 17:07:42.150 DEBUG 18536 --- [http-nio-8000-exec-10] c.c.f.d.m.FmFileMapper.selectByExample   : ==> Parameters: lyuyu(String), 0(Long)[m
+[32m+[m[32m2019-05-20 17:07:42.152 DEBUG 18536 --- [http-nio-8000-exec-10] c.c.f.d.m.FmFileMapper.selectByExample   : <==      Total: 0[m
