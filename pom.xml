@@ -123,6 +123,18 @@
 		<!-- 打成jar包的时候，
 		处理哪些目录
 		-->
+		<resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/mapper/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
 		
 		
 	</build>
