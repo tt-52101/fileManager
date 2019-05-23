@@ -22,10 +22,10 @@ public class FileService implements IFileService{
 	 private FmFileMapper fmfilemapper;
 	 @Override
 	 @Cacheable(value = "cn.cs.fileManager.dao.model.FmFile", key = "#root.targetClass + #root.methodName")
-	 public List<FmFile> getAllownerfile(String owner,long folderid){
+	 public List<FmFile> getAllFile(long userid,long folderid,boolean isNormal){
 		 FmFileExample fe=new FmFileExample();
 		 Criteria criteria = fe.createCriteria();
-		 criteria.andRegAccountEqualTo(owner);
+		 criteria.andRegAccountEqualTo(userid);
 		 criteria.andFolderIdEqualTo(folderid);
 		 List<FmFile> list=fmfilemapper.selectByExample(fe);
 		 return list; 
@@ -46,21 +46,21 @@ public class FileService implements IFileService{
 	 }
 	 @Override
 	 @Cacheable(value = "cn.cs.fileManager.dao.model.FmFile", key = "#root.targetClass + #root.methodName")
-	 public List<FmFile> getNovalid(String owner){
+	 public List<FmFile> getNovalid(long userid){
 		 FmFileExample fe=new FmFileExample();
 		 Criteria criteria = fe.createCriteria();
-		 criteria.andRegAccountEqualTo(owner);
+		 criteria.andRegAccountEqualTo(userid);
 		 criteria.andValidEqualTo("0");
 		 List<FmFile> list=fmfilemapper.selectByExample(fe);
 		 return list;
 	 }
 	 @Override
 	 @Cacheable(value = "cn.cs.fileManager.dao.model.FmFile", key = "#root.targetClass + #root.methodName")
-	 public List<FmFile> getNowfile(long fileid){
+	 public FmFile getNowfile(long fileid){
 		 FmFileExample fe=new FmFileExample();
 		 Criteria criteria = fe.createCriteria();
 		 criteria.andIdEqualTo(fileid);
 		 List<FmFile> list=fmfilemapper.selectByExample(fe);
-		 return list; 
+		 return list.get(0); 
 	 }
 }

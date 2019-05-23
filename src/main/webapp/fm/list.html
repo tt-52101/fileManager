@@ -42,7 +42,7 @@
   <div class="row">
     <div class="col-sm-2">
      <ul class="nav nav-pills nav-stacked">
-	<li ><a href="javascript:;" onclick=xinjianxian()><span class="glyphicon glyphicon-folder-open">  新建文件夹</span></a></li>
+	<li ><a href="javascript:;" onclick=xinjianxian()><span class="glyphicon glyphicon-folder-open"> 新建文件夹</span></a></li>
 	<li ><a href="javascript:;" onclick=uploadxian()><span class="glyphicon glyphicon-cloud-upload"> 上传文件</span></a></li>
 	<li ><a href="javascript:;" onclick=huishou()><span class="glyphicon glyphicon-trash"> 回收站</span></a></li>
 	<li ><a href="/fm/update.html"><span class="glyphicon glyphicon-user"> 修改个人信息</span></a></li>
@@ -60,13 +60,14 @@
 </div>
 </body>
 <script type="text/javascript">
-var user;
+
 var ald;
 var dqald;
 var dao=new Array();
-$(function(){
-	var ppid=0;
+var userid;
 
+$(function(){
+	var ppid=0;	
 	obj={};
 	
 	$.ajax({
@@ -75,15 +76,15 @@ $(function(){
           url: "/getpsnlmsg",
           data:null,
           contentType:"application/json",
-        success: function (result) {
+          success: function (result) {
         	//alert(result);
         	if(result.id==-1)
         	{        		
         		window.location.href="/fm/error.html";
         	}
             console.log(result);
-            user=result.loginName;
-            shengcheng(ppid,'/getAllownerfolder',user);
+            userid=result.id;
+            shengcheng(ppid,'/getAllFolder',userid);
             
         },
         error: function () {      
@@ -94,26 +95,24 @@ $(function(){
 $(document).click(function(){
 	$("#qq").hide();
 })
-//显示参数ID的所有子文件夹
+//显示参数fold 的id =ID的所有子文件夹 和文件 
 function show(ID)
 	{
 	
 	     var trData="";
 	     if(ald==''){
-	    	 //trData+="空文件夹";
-	    	 //$("#showdata").empty();
-	         //$("#showdata").append(trData);
+	    	
 	     }
 	     else{
 	    	 for(var i=0;i<ald.length;i++)
 	         {
 	        	 if(ald[i].pId==ID&&ald[i].valid!=0){
 	        	  if(ID==0){
-	        		  trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' style='cursor:pointer' onclick=shengcheng("+ald[i].id+",'/getAllownerfolder','"+user+"')>"+ ald[i].folderName+"</span>"+
+	        		  trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' style='cursor:pointer' onclick=shengcheng("+ald[i].id+",'/getAllFolder','"+userid+"')>"+ ald[i].folderName+"</span>"+
 		                 "</li>"
 	        	  }
 	        	  else{
-	              trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' style='cursor:pointer' onclick=shengcheng("+ald[i].id+",'/getAllownerfolder','"+user+"')>"+ ald[i].folderName+"</span>"+
+	              trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' style='cursor:pointer' onclick=shengcheng("+ald[i].id+",'/getAllFolder','"+userid+"')>"+ ald[i].folderName+"</span>"+
 	                 "<a style='float:right' href='javascript:;' onclick='delfolder("+ald[i].id+")'>|删除</a></li>"
 	        	  }
 	        	 }
@@ -122,7 +121,7 @@ function show(ID)
 	         //$("#showdata").empty();
 	         //$("#showdata").append(trData);
 	     }
-	     require(ID,"/getAllfile",user);
+	     require(ID,"/getAllfile",userid);
 	     if(ald==''&&trData==''){
     	 }
 	     else{
@@ -170,18 +169,18 @@ function show(ID)
 function download1(id)
 {
 	var item=sessionStorage.getItem('item');
-	require(id,"/getnow",user);
-   var fileName=ald[0].fileName;
-   var filetruename=ald[0].fileTrueName;
-   require(dao[item],"/getDangqian",user);
-   var realPath=ald[0].baseDir;
+	require(id,"/getnow",userid);
+   var fileName=ald.fileName;
+   var filetruename=ald.fileTrueName;
+   require(dao[item],"/getDangqian",userid);
+   var realPath=ald.baseDir;
 
-   window.location.href='/download2?fileName='+fileName+'&filetruename='+filetruename+'&fid='+dao[item];
+   window.location.href='/download?fileName='+fileName+'&filetruename='+filetruename+'&fid='+dao[item];
 }
 //回收站
 function huishou()
 {
-	require(0,"/huishouzhan",user);
+	require(0,"/huishouzhan",userid);
 	var trData="";
     if(ald==''){
     }
@@ -189,14 +188,12 @@ function huishou()
     	    trData+="<a href='javascript:;' onclick='hui()'>返回</a>"
         	+"<ul class='list-group' id='showdata'>"
        	    for(var i=0;i<ald.length;i++){
-                 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' onclick=shengcheng("+ald[i].id+",'/getAllownerfolder','"+user+"')>"+ ald[i].folderName+"</span>"+
+                 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' onclick=shengcheng("+ald[i].id+",'/getAllFolder','"+userid+"')>"+ ald[i].folderName+"</span>"+
                     "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanyuan("+ald[i].id+")'> 还原|</a></li>"
            	 
-            }
-            //$("#youyemian").empty();
-            //$("#youyemian").append(trData);
+            }        
 	}
-    require(0,"/huishoufile",user);
+    require(0,"/huishoufile",userid);
     if(ald==''&&trData==''){
 		 trData+="<a href='javascript:;' onclick='hui()'>返回</a>";
 	 }
@@ -278,21 +275,21 @@ function huishou()
 //文件夹还原
 function huanyuan(id)
 {
-	require(id,"/folhuanyuan",user);
+	require(id,"/folhuanyuan",userid);
 	alert("还原成功");
 	hui();
 }
 //文件还原
 function huanfile(id)
 {
-	require(id,"/huanfile",user);
+	require(id,"/huanfile",userid);
 	alert("还原成功");
 	hui();
 }
 //删除文件夹
 function delfolder(id)
 {
-	require(id,'/getAllownerfolder',user);
+	require(id,'/getAllFolder',userid);
 	if(ald!=''){
    	    var choose=warning();
    	    if(choose==false){}
@@ -362,8 +359,8 @@ function warning()
 //文件夹重命名
 function renamexian(id)
 {
-	require(id,'/getDangqian',user);
-	var foldname=ald[0].folderName;
+	require(id,'/getDangqian',userid);
+	var foldname=ald.folderName;
 	var text="<a href='javascript:;' onclick='hui()'>返回</a>"
 		+"<form class='form-horizontal' role='form'>"
 	  +"<div class='form-group'>"
@@ -380,21 +377,25 @@ function renamexian(id)
 	     $("#youyemian").append(text);
 		
 }
-//点击文件夹显示所有子文件夹
-function shengcheng(pid,url,owner)
+//点击文件夹显示所有子文件夹,url在这个函数中是常量‘/getAllFolder’
+function shengcheng(pid,url,userid)
 {
-	////将父ID进行保存
+	url="/getAllFolder";
+	//保存用户的操作
 	fuid(pid);
-	require(pid,url,owner);
+	//get all folders of pid owned by userid
+	require(pid,url,userid);
+	//显示参数fold 的id =ID的所有子文件夹 和文件
 	show(pid);
+	//显示当前文件路径
 	dangqian(pid);
 }
 
-//请求后端数据
-function require(pid,url,owner){
-	var pidobj={"id":"","owner":""};
+//get all folders/files of pid 时 请求后端数据
+function require(pid,url,userid){
+	var pidobj={"id":"","userid":""};
 	pidobj.id=pid;
-	pidobj.owner=owner;
+	pidobj.userid=userid;
 	$.ajax({
 		type: 'post',
         url: url,
@@ -405,7 +406,7 @@ function require(pid,url,owner){
         success: function (data) {
             console.log(data);
         	ald=data;
-        	//console.log(ald[0].folderName);
+        	
         },
         error: function () {
 
@@ -423,19 +424,19 @@ function fanhui()
 	else
 	{
 		var id=dao[item];
-		var pidobj={"id":"","owner":""};
-		pidobj.owner=user;
+		var pidobj={"id":"","userid":""};
+		pidobj.userid=userid;
 		pidobj.id=id;
 		$.ajax({
 			type: 'post',
-	        url: '/getFaihui',
+	        url: '/getPFolder',
 	        dataType:'text',
 	        data:JSON.stringify(pidobj),
 	        contentType:"application/json",
 	        async:false,
 	        success: function (data) {
 	            console.log(data);
-	            require(data,'/getAllownerfolder',user);
+	            require(data,'/getAllFolder',userid);
 	            show(data);
 	            dangqian(data);
 	        },
@@ -458,22 +459,23 @@ function dangqian(id)
        $("#dangqian").append(text);
    }
    else{
-	   require(id,url,user);
+	   require(id,url,userid);
 	   var text='';
-	   text+=">"+"<a href='javascript:;'>"+ald[0].folderName+"</a>";
-	   console.log('第一次的pid应该为零'+ald[0].folderName+ald[0].pId)
+	   text+=">"+"<a href='javascript:;'>"+ald.folderName+"</a>";
+	   console.log('第一次的pid应该为零'+ald.folderName+ald.pId)
 	   //传回当前文件夹的父文件夹的内容直到pid为零
-	   while(ald[0].pId!=0){
-		   require(ald[0].pId,url,user);
+	   while(ald.pId!=0){
+		   require(ald.pId,url,userid);
 		   
-		   text=">"+"<a href='javascript:;'>"+ald[0].folderName+"</a>"+text;
+		   text=">"+"<a href='javascript:;'>"+ald.folderName+"</a>"+text;
 	   }
 	   text="<a href='javascript:;'>root</a>"+text;
 	   $("#dangqian").empty();
        $("#dangqian").append(text);
    }
 }
-//将父ID进行保存，记录从根目录到深层目录的每一步。
+//用户操作记录，记录从根目录到深层目录的每一步。
+//pid是指当前的文件夹的上一层的id
 function fuid(pid)
 {
 	if(pid==0){
@@ -488,6 +490,7 @@ function fuid(pid)
 		sessionStorage.setItem('item', item);
 	}
 }
+
 //新建文件夹将内容改变显示出来
 function xinjianxian()
 {
@@ -499,9 +502,9 @@ function xinjianxian()
 	}
 	else{
 		var url='/getDangqian';
-		require(dao[item],url,user);
-		var basedir=ald[0].baseDir;
-		var regaccount=user;
+		require(dao[item],url,userid);
+		var basedir=ald.baseDir;
+		var regaccount=userid;
 		
 	$('#youyemian').empty();
 	var text="<a href='javascript:;' onclick='hui()'>返回</a>"
@@ -511,8 +514,8 @@ function xinjianxian()
    +"<div class='col-sm-10'>"
      +"<input type='text' class='form-control' onchange='check($(this).val())' name='foldername' value='新建文件夹'><span style='color:red' id='warningInfo'></span></div></div>"
      +"<input type='hidden' name='pid' value="+dao[item]+">"
-     +"<input type='hidden' name='owner' value="+user+">"
-     +"<input type='hidden' name='basedir' value="+ald[0].baseDir+">"
+     
+     +"<input type='hidden' name='basedir' value="+ald.baseDir+">"
      +"<input type='hidden' name='regaccount' value="+regaccount+">"
   +"<div class='form-group'>"
     +"<label  class='col-sm-2 control-label'>描述</label>"
@@ -550,13 +553,13 @@ function tranmission(){
 	var folderid=dao[item];
     var obj={};
     obj.id=folderid;
-    require(folderid,"/getDangqian",user);
-    var Basedir=ald[0].baseDir;
+    require(folderid,"/getDangqian",userid);
+    var Basedir=ald.baseDir;
     obj.basedir=Basedir;
-    obj.account=user;
+    obj.account=userid;
    	$.ajax({
    		type:"post",
-   		url:"/aaa",
+   		url:"/toUpload",
    		data:JSON.stringify(obj),
    		dataType:'json',
    		contentType:'application/json',
@@ -596,7 +599,7 @@ function hui()
      $("#youyemian").append(text);
 	var item=sessionStorage.getItem('item');
 	var pid=dao[item];
-	require(pid,'/getAllownerfolder',user);
+	require(pid,'/getAllFolder',userid);
 	show(pid);
 	dangqian(pid);
 }
@@ -621,7 +624,7 @@ function check(val){
 	var pid=dao[item];
 	console.log("检查文件夹"+pid);
 	var flag=0;
-	require(pid,'/getAllownerfolder',user);
+	require(pid,'/getAllFolder',userid);
 	console.log("检查文件夹"+ald);
 	for(var i=0;i<ald.length;i++){
 		if(ald[i].folderName==val){
@@ -642,13 +645,13 @@ function check(val){
 //检测重命名时是否符合命名标准
 function recheck(val,id)
 {
-	require(id,'/getDangqian',user);
-	var foldname=ald[0].folderName;
+	require(id,'/getDangqian',userid);
+	var foldname=ald.folderName;
 	var item=sessionStorage.getItem('item');
 	var pid=dao[item];
 	//console.log("检查文件夹"+pid);
 	var flag=0;
-	require(pid,'/getAllownerfolder',user);
+	require(pid,'/getAllFolder',userid);
 	//console.log("检查文件夹"+ald);
 	for(var i=0;i<ald.length;i++){
 		if(ald[i].folderName==val&&val!=foldname){

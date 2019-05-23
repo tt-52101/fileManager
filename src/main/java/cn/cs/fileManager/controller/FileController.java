@@ -14,7 +14,9 @@ import com.alibaba.fastjson.JSONObject;
 import cn.cs.fileManager.dao.model.FmFile;
 import cn.cs.fileManager.dao.model.FmFolder;
 import cn.cs.fileManager.service.IFileService;
+import io.swagger.annotations.Api;
 
+@Api(value = "File Controller")
 @RestController
 public class FileController{
 	 @Autowired
@@ -23,8 +25,8 @@ public class FileController{
 	 public List<FmFile> getAllfile(@RequestBody String canshu){
 		 JSONObject ccan=JSON.parseObject(canshu);
 		 long id=Long.parseLong(ccan.getString("id"));
-		 String owner=ccan.getString("owner");
-		 List<FmFile> list=this.fileservice.getAllownerfile(owner, id);
+		 long userid=Long.parseLong(ccan.getString("userid"));
+		 List<FmFile> list=this.fileservice.getAllFile(userid, id,true);
 		 return list;
 	 }
 	 @RequestMapping(value = { "/delefile" }, method = { RequestMethod.POST },produces = {"application/json; charset=utf-8"})
@@ -42,16 +44,16 @@ public class FileController{
 	 public List<FmFile> huishoufile(@RequestBody String canshu)
 	 {
 		 JSONObject ccan=JSON.parseObject(canshu);
-		 String owner=ccan.getString("owner");
-		 List<FmFile> list =this.fileservice.getNovalid(owner);
+		 long userid=Long.parseLong(ccan.getString("userid"));
+		 List<FmFile> list =this.fileservice.getNovalid(userid);
 		 return list;
 	 }
 	 @RequestMapping(value = { "/getnow" }, method = { RequestMethod.POST },produces = {"application/json; charset=utf-8"})
-	 public List<FmFile> getnow(@RequestBody String canshu)
+	 public FmFile getnow(@RequestBody String canshu)
 	 {
 		 JSONObject ccan=JSON.parseObject(canshu);
 		 long id=Long.parseLong(ccan.getString("id"));
-		 List<FmFile> list=this.fileservice.getNowfile(id);
+		 FmFile list=this.fileservice.getNowfile(id);
 		 return list;
 	 }
 }

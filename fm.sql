@@ -11,7 +11,7 @@
  Target Server Version : 50723
  File Encoding         : 65001
 
- Date: 03/01/2019 09:04:55
+ Date: 23/05/2019 19:43:16
 */
 
 SET NAMES utf8mb4;
@@ -24,25 +24,34 @@ DROP TABLE IF EXISTS `fm_file`;
 CREATE TABLE `fm_file`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `folder_id` bigint(20) NOT NULL,
-  `file_true_name` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `file_name` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'uuid',
+  `file_true_name` varchar(300) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `file_name` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'uuid',
   `file_size` int(11) NOT NULL,
   `file_type_id` bigint(20) NULL DEFAULT NULL,
   `ver` int(11) NOT NULL DEFAULT 0,
   `reg_date` datetime(0) NULL,
-  `reg_account` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `reg_account` bigint(20) NOT NULL,
   `upd_date` datetime(0) NULL,
-  `upd_account` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `upd_account` bigint(20) NOT NULL,
   `description` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `valid` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `fm_file_ibfk_1`(`folder_id`) USING BTREE,
+  INDEX `file_type_id`(`file_type_id`) USING BTREE,
+  INDEX `reg_account`(`reg_account`) USING BTREE,
+  INDEX `upd_account`(`upd_account`) USING BTREE,
+  CONSTRAINT `fm_file_ibfk_1` FOREIGN KEY (`folder_id`) REFERENCES `fm_folder` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fm_file_ibfk_2` FOREIGN KEY (`file_type_id`) REFERENCES `fm_file_type` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `fm_file_ibfk_3` FOREIGN KEY (`reg_account`) REFERENCES `fm_user` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `fm_file_ibfk_4` FOREIGN KEY (`upd_account`) REFERENCES `fm_user` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of fm_file
 -- ----------------------------
-INSERT INTO `fm_file` VALUES (1, 1, 'fmmanager.txt', 'db6dd5cc-e510-47ea-803f-79d9ce609fd7.txt', 1, 1, 0, '2018-12-27 08:48:14', 'happystart', '2018-12-27 08:48:14', 'happystart', '无', '1');
-INSERT INTO `fm_file` VALUES (2, 2, '视频拍摄.txt', 'acbc9aa8-ba83-49b5-a13c-61cf0be07c84.txt', 0, 1, 0, '2018-12-27 08:48:58', 'happystart', '2018-12-27 08:48:58', 'happystart', '无', '1');
+INSERT INTO `fm_file` VALUES (5, 6, 'test.txt', '626de046-db60-490a-9f80-97aa609a25d0.txt', 0, 1, 0, '2019-05-19 08:39:24', 485, '2019-05-19 08:39:24', 485, '无', '1');
+INSERT INTO `fm_file` VALUES (6, 6, 'IMG_4330.JPG', '2ca2709e-dde6-4c8e-b8cd-02f5a16db9c5.JPG', 3538, 4, 0, '2019-05-19 08:39:38', 485, '2019-05-19 08:39:38', 485, '无', '0');
+INSERT INTO `fm_file` VALUES (7, 6, '毕设论文准备.md', '7f2575f8-a9c4-40e8-ad8e-3fa6bb26235b.md', 3, 13, 0, '2019-05-23 11:29:25', 485, '2019-05-23 11:29:25', 485, '无', '0');
 
 -- ----------------------------
 -- Table structure for fm_file_type
@@ -52,12 +61,12 @@ CREATE TABLE `fm_file_type`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `file_ext` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `content_type` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `content_type` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `max_upload_size` int(11) NULL DEFAULT 0,
   `max_download_size` int(11) NULL DEFAULT 0,
   `valid` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of fm_file_type
@@ -73,6 +82,8 @@ INSERT INTO `fm_file_type` VALUES (8, '视频', '.mp4', NULL, 1000000, 1000000, 
 INSERT INTO `fm_file_type` VALUES (9, '视频', '.avi', 'video/avi', 1000000, 1000000, '1');
 INSERT INTO `fm_file_type` VALUES (10, '演示', '.ppt', 'application/vnd.ms-powerpoint', 1000000, 1000000, '1');
 INSERT INTO `fm_file_type` VALUES (11, '压缩包', '.zip', NULL, 1000000, 1000000, '1');
+INSERT INTO `fm_file_type` VALUES (12, '文档', '.pdf', 'application/pdf', 1000000, 1000000, '1');
+INSERT INTO `fm_file_type` VALUES (13, '文档', '.md', 'text/plain', 1000000, 1000000, '1');
 
 -- ----------------------------
 -- Table structure for fm_folder
@@ -80,22 +91,23 @@ INSERT INTO `fm_file_type` VALUES (11, '压缩包', '.zip', NULL, 1000000, 10000
 DROP TABLE IF EXISTS `fm_folder`;
 CREATE TABLE `fm_folder`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `folder_name` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `folder_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `p_id` bigint(20) NULL DEFAULT NULL,
-  `owner` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `base_dir` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `base_dir` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `reg_date` datetime(0) NULL DEFAULT NULL,
-  `reg_account` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `reg_account` bigint(20) NULL DEFAULT NULL,
   `description` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `valid` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '1',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `reg_account`(`reg_account`) USING BTREE,
+  CONSTRAINT `fm_folder_ibfk_2` FOREIGN KEY (`reg_account`) REFERENCES `fm_user` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of fm_folder
 -- ----------------------------
-INSERT INTO `fm_folder` VALUES (1, 'happystart', 0, 'happystart', 'E:\\test\\happystart', '2018-12-27 08:47:15', 'happystart', '无', '1');
-INSERT INTO `fm_folder` VALUES (2, 'music', 1, 'happystart', 'E:\\test\\happystart\\music', '2018-12-27 08:48:46', 'happystart', 'of mino', '1');
+INSERT INTO `fm_folder` VALUES (6, 'start', 0, 'E:\\test\\start', '2019-05-19 08:38:52', 485, '无', '1');
+INSERT INTO `fm_folder` VALUES (7, 'Tupac', 6, 'E:\\test\\start\\Tupac', '2019-05-19 08:42:11', 485, '无', '1');
 
 -- ----------------------------
 -- Table structure for fm_user
@@ -111,12 +123,12 @@ CREATE TABLE `fm_user`  (
   `valid` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `login_name_unique`(`login_name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 481 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 489 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of fm_user
 -- ----------------------------
-INSERT INTO `fm_user` VALUES (1, 'Adam', 'MTIz', '13787662939', '2018-12-26 09:30:14', '0', '1');
+INSERT INTO `fm_user` VALUES (1, 'Adam', 'MTIz', '13787662939', '2019-05-23 10:52:28', '0', '1');
 INSERT INTO `fm_user` VALUES (2, 'Beta', 'MTIz', '13787662935', '2018-12-24 02:36:01', '0', '1');
 INSERT INTO `fm_user` VALUES (3, 'Adam2', 'MTIzNA==', '13787662935', '2018-12-24 02:22:27', '1', '1');
 INSERT INTO `fm_user` VALUES (4, 'lyu', 'MTIzNA==', '13787662936', '2018-12-04 10:47:40', '1', '1');
@@ -593,8 +605,13 @@ INSERT INTO `fm_user` VALUES (474, '檀冷玉', 'MTIzNA==', '13372829479', '2020
 INSERT INTO `fm_user` VALUES (475, '肇寄春', 'MTIzNA==', '13372829479', '2020-03-30 10:53:53', '1', '1');
 INSERT INTO `fm_user` VALUES (476, '铎修能', 'MTIzNA==', '13372829479', '2020-03-31 10:53:53', '1', '1');
 INSERT INTO `fm_user` VALUES (477, '源森', 'MTIzNA==', '13372829479', '2020-04-01 10:53:53', '1', '1');
-INSERT INTO `fm_user` VALUES (478, 'Adam11', 'MTIz', '13311112222', '2018-12-26 07:54:55', '1', '1');
+INSERT INTO `fm_user` VALUES (478, 'Adam11', 'MTIz', '13311112222', '2019-04-22 07:21:15', '1', '1');
 INSERT INTO `fm_user` VALUES (479, 'Adam111', 'MTIz', '13311112222', '2018-12-26 07:56:01', '1', '1');
-INSERT INTO `fm_user` VALUES (480, 'happystart', 'MTIzNA==', '13311112222', '2018-12-27 08:49:30', '1', '1');
+INSERT INTO `fm_user` VALUES (480, 'happystart', 'MTIzNA==', '13311112222', '2019-04-09 07:07:31', '1', '1');
+INSERT INTO `fm_user` VALUES (481, 'lyuyu', 'bHl1eXU=', '18340853243', '2019-05-23 10:52:47', '1', '1');
+INSERT INTO `fm_user` VALUES (484, 'Adam1111', 'MTIz', '18340853243', '2019-05-19 01:26:45', '1', '1');
+INSERT INTO `fm_user` VALUES (485, 'start', 'MTIz', '18340853243', '2019-05-23 11:28:09', '1', '1');
+INSERT INTO `fm_user` VALUES (487, 'ha', 'MTIz', '18340853243', '2019-05-23 10:50:35', '1', '1');
+INSERT INTO `fm_user` VALUES (488, 'Adam666', 'MTIz', '18340853243', '2019-05-23 10:53:46', '1', '1');
 
 SET FOREIGN_KEY_CHECKS = 1;

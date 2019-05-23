@@ -9,7 +9,7 @@ import cn.cs.fileManager.dao.model.FmUser;
 public interface IUploadService {
 
 
-	boolean insert(String trueName,long fileSize,String UUIDfileName,long folderid,String account);
+	boolean insert(String trueName,long fileSize,String UUIDfileName,long folderid,long account);
 
 	List<FmFileType> getFileTypeList(String suffixName);
 

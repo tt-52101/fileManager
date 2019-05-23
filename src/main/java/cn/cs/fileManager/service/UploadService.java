@@ -25,11 +25,9 @@ private FmFileMapper fmFileMapper;
     public static long limitSize=10000; 
     @Override
     @Cacheable(value = "cn.cs.fileManager.dao.model.FmFile", key = "#root.targetClass + #root.methodName")
-public boolean insert(String trueName,long fileSize,String UUIDfileName,long folderid,String account) {
-    	
-    	
+public boolean insert(String trueName,long fileSize,String UUIDfileName,long folderid,long account) {
+     	
         FmFile  file=new FmFile();
-/*		file.setId((long) 3);*/
         int filesize=(int)fileSize;
 		file.setFolderId(folderid);
 		file.setFileSize( filesize);
@@ -45,7 +43,8 @@ public boolean insert(String trueName,long fileSize,String UUIDfileName,long fol
 		file.setRegDate(new Date());	
 		fmFileMapper.insert(file);
 
-    	return true;	}
+    	return true;	
+}
 
 
 
@@ -58,11 +57,10 @@ public boolean insert(String trueName,long fileSize,String UUIDfileName,long fol
 		 FmFileTypeExample file = new FmFileTypeExample();
          Criteria criteria = file.createCriteria();
         criteria.andFileExtEqualTo(suffixName);
-	        List<FmFileType> list = fmFileTypeMapper.selectByExample(file);
-	        System.out.println(list);
-	        fm_file_type_id=list.get(0).getId();
-	        System.out.println("测试3");
-	        System.out.println(fm_file_type_id);
+	    List<FmFileType> list = fmFileTypeMapper.selectByExample(file);
+	        
+	    fm_file_type_id=list.get(0).getId();
+	     
 		return list;
 }
 }

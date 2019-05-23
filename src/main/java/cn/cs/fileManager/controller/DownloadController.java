@@ -32,13 +32,15 @@ import cn.cs.fileManager.dao.model.FmFolder;
 import cn.cs.fileManager.service.IFileService;
 import cn.cs.fileManager.service.IFolderService;
 import cn.cs.fileManager.service.UserService;
+import io.swagger.annotations.Api;
+@Api(value = "download Controller")
 @Controller
-public class DownloadController2 {
+public class DownloadController {
 
 	@Autowired
 	 private IFolderService folderservice;
-	 private static final Logger logger=LoggerFactory.getLogger(DownloadController2.class);
-    @RequestMapping(value= {"/download2"})
+	 private static final Logger logger=LoggerFactory.getLogger(DownloadController.class);
+    @RequestMapping(value= {"/download"})
     @ResponseBody
     public void  download(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
@@ -46,13 +48,11 @@ public class DownloadController2 {
 
 		 String fileName = request.getParameter("fileName");
 		 String filetruename = request.getParameter("filetruename");
-		 String fid = request.getParameter("fid");
+		 long fid = Long.parseLong(request.getParameter("fid"));
 
-
-		    String owner="zz";
-		    long id=Long.parseLong(fid);
-	        List<FmFolder> list = this.folderservice.getDangqian(owner,id);
-	        String realpath=list.get(0).getBaseDir();
+		   		    
+	     FmFolder list = this.folderservice.getINfoOf(fid);
+	     String realpath=list.getBaseDir();
 		 
 		 
 	  if (fileName != null) {

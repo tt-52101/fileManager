@@ -34,22 +34,28 @@ public class FolderService  implements IFolderService {
 	 private static final Logger logger=LoggerFactory.getLogger(FolderService.class);
 	@Override
 	@Cacheable(value = "cn.cs.fileManager.dao.model.FmFolder", key = "#root.targetClass + #root.methodName")
-	public List<FmFolder> getAllownerfolder(String owner,long pid) {
+	public List<FmFolder> getAllFolder(long userid,long pid,boolean isNormal) {
 		// TODO Auto-generated method stub
 		FmFolderExample fe = new FmFolderExample();
         Criteria criteria = fe.createCriteria();
-        criteria.andOwnerEqualTo(owner);
+        if(isNormal)
+        {
+        	criteria.andRegAccountEqualTo(userid);
+        }       
         criteria.andPIdEqualTo(pid);
         List<FmFolder> list = fmfoldermapper.selectByExample(fe);
         return list;
 	}
 	@Override
 	@Cacheable(value = "cn.cs.fileManager.dao.model.FmFolder", key = "#root.targetClass + #root.methodName")
-	public long getFaihui(String owner,long id)
+	public long getPFolder(long userid,long id,boolean isNormal)
 	{
 		FmFolderExample fe = new FmFolderExample();
         Criteria criteria = fe.createCriteria();
-        criteria.andOwnerEqualTo(owner);
+        if(isNormal)
+        {
+        	criteria.andRegAccountEqualTo(userid);
+        }   
         criteria.andIdEqualTo(id);
         List<FmFolder> li=fmfoldermapper.selectByExample(fe);
         long pid=li.get(0).getpId();
@@ -58,25 +64,26 @@ public class FolderService  implements IFolderService {
 	}
 	@Override
 	@Cacheable(value = "cn.cs.fileManager.dao.model.FmFolder", key = "#root.targetClass + #root.methodName")
-	public List<FmFolder> getDangqian(String owner,long id)
+	public FmFolder getINfoOf(long id)
 	{
 		FmFolderExample fe = new FmFolderExample();
         Criteria criteria = fe.createCriteria();
         criteria.andIdEqualTo(id);
         List<FmFolder> list=fmfoldermapper.selectByExample(fe);
-		return list;
+         
+		return list.get(0);
 		
 	}
 	@Override
 	@Cacheable(value = "cn.cs.fileManager.dao.model.FmFolder", key = "#root.targetClass + #root.methodName")
-	public void xinjian(String xulie)
+	public void newFolder(String xulie)
 	{
 		JSONObject xxulie=JSON.parseObject(xulie);
 		 String foldername=xxulie.getString("foldername");
 		 long pid=Long.parseLong(xxulie.getString("pid"));
-		 String owner=xxulie.getString("owner");
+		 
 		 String basedir=xxulie.getString("basedir");
-		 String regaccount=xxulie.getString("regaccount");
+		 long regaccount=Long.parseLong(xxulie.getString("regaccount"));
 		 String description=xxulie.getString("description");
 		 String valid=xxulie.getString("valid");
 		 basedir+="\\"+foldername;
@@ -86,7 +93,7 @@ public class FolderService  implements IFolderService {
 		 fmf.setBaseDir(basedir);
 		 fmf.setDescription(description);
 		 fmf.setFolderName(foldername);
-		 fmf.setOwner(owner);
+		 
 		 fmf.setRegDate(new Date());
 		 fmf.setRegAccount(regaccount);
 		 fmf.setValid(valid);
@@ -96,18 +103,11 @@ public class FolderService  implements IFolderService {
 			if(!file.exists()){//如果文件夹不存在
 				file.mkdir();//创建文件夹
 			}
-			//try{异常处理
-				//如果Qiju_Li文件夹下没有Qiju_Li.txt就会创建该文件
-				//BufferedWriter bw=new BufferedWriter(new FileWriter(basedir));
-				//bw.write("Hello I/O!");//在创建好的文件中写入"Hello I/O"
-				//bw.close();//一定要关闭文件
-			//}catch(IOException e){
-				//e.printStackTrace();
-			//}
+			
 	}
 	@Override
 	@Cacheable(value = "cn.cs.fileManager.dao.model.FmFolder", key = "#root.targetClass + #root.methodName")
-	public void gengxin(String canshu)
+	public void updateFolder(String canshu)
 	{
 		JSONObject ccanshu=JSON.parseObject(canshu);
 		long id=Long.parseLong(ccanshu.getString("id"));
@@ -119,13 +119,14 @@ public class FolderService  implements IFolderService {
         criteria.andIdEqualTo(id);
 		fmfoldermapper.updateByExampleSelective(fmf, fe);
 	}
+	
 	@Override
 	@Cacheable(value = "cn.cs.fileManager.dao.model.FmFolder", key = "#root.targetClass + #root.methodName")
-	public List<FmFolder> getNovalid(String owner)
+	public List<FmFolder> getNovalid(long userid,boolean isNormal)
 	{
 		FmFolderExample fe = new FmFolderExample();
         Criteria criteria = fe.createCriteria();
-        criteria.andOwnerEqualTo(owner);
+        criteria.andRegAccountEqualTo(userid);
         criteria.andValidEqualTo("0");
         List<FmFolder> list = fmfoldermapper.selectByExample(fe);
         return list;

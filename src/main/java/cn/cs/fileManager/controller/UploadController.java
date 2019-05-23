@@ -24,23 +24,27 @@ import cn.cs.fileManager.dao.model.FmUser;
 import cn.cs.fileManager.service.IUploadService;
 import cn.cs.fileManager.service.IUserService;
 import cn.cs.fileManager.service.UploadService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 @RestController
+@Api(value = "uploadController")
 public class UploadController {
 	@Autowired
 
 	private  IUploadService up;
 	 public  long  folderid;
 	 public  String fmFolder_baseDir;
-	 public  String account;
+	 public  long account;
 	 
-	 @RequestMapping(value= {"/aaa"},method= {RequestMethod.POST}) 
+	 @ApiOperation(value= "取得当前文件夹的信息",notes="")
+	 @RequestMapping(value= {"/toUpload"},method= {RequestMethod.POST}) 
 	    public JSONObject  fanhui(@RequestBody String tranmission)
 	    {
 	    	JSONObject  a=JSON.parseObject(tranmission);
 	    	folderid=Long.parseLong(a.getString("id"));
 
 	    	fmFolder_baseDir=a.getString("basedir");
-	    	account=a.getString("account");
+	    	account=Long.parseLong(a.getString("account"));
 	    	System.out.println(folderid+fmFolder_baseDir);
 	    	JSONObject  b=new JSONObject();
 	    	b.put("tip", "II");
@@ -48,6 +52,7 @@ public class UploadController {
 	    }
 	 
 
+	 @ApiOperation(value= "上传文件",notes="")
     @RequestMapping(value= {"/upload"},method= {RequestMethod.POST},produces= {"application/json;charset=utf-8"})
     public JSONObject  upload(@RequestBody MultipartFile fileUpload)
     {
