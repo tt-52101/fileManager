@@ -15,7 +15,7 @@ import cn.cs.fileManager.dao.model.FmUserExample;
 public interface IUserService {
 
     List<FmUser> getUserList();
-    FmUser getUser(String login_name,String password);
+//    FmUser getUser(String login_name,String password);
     long checkUserName(String login_name);
     boolean register(FmUser u);	
 	boolean updateTime(FmUser u);

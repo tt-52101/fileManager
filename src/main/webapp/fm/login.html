@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link rel="stylesheet" href="./res/bootstrap-3.3.7-dist/css/bootstrap.min.css" type="text/css">
+     <link rel="stylesheet" href="./css/login.css" type="text/css">
     <script src="js/jquery-3.3.1.min.js"></script>
     <script>
 
@@ -25,8 +26,7 @@
                         window.location.href = "/fm/login.html";
                         return false;
                     }
-                    else {
-                        alert(result.type);
+                    else {                       
                         if (result.type == "1") {
                             window.location.href = "/fm/list.html";
                            return false;
@@ -44,6 +44,7 @@
         $.fn.serializeObject = function () {
             var o = {};
             var a = this.serializeArray();
+            
             $.each(a, function () {
                 if (o[this.name] !== undefined) {
                     if (!o[this.name].push) {
@@ -52,44 +53,39 @@
                     o[this.name].push(this.value || '');
                 } else {
                     o[this.name] = this.value || '';
+                    if(this.name == "remember" && o[this.name] == "on")
+                    {
+                    	o[this.name] = true || '';
+                    }
                 }
             });
+           if(o["remember"] == undefined)
+        	{
+        	   o["remember"] =false;
+        	}
             return o;
         };
 
     </script>
 </head>
-<!-- background="./image/2210.jpg" -->
+
 <body >
 
-<div class="container" style="width: 40%;margin-top: 50px">
-    <fieldset>
-        <legend  >身份认证</legend>
-    </fieldset>
-
-    <form class="form-horizontal">
-        <div class="form-group">
-            <label for="name" class="col-md-2 control-label">用户名： </label>
-            <div class="col-md-10">
-                <input type="text" class="form-control" id="name" name="name" placeholder="请输入用户名" required/>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="password" class="col-md-2 control-label">密码： </label>
-            <div class="col-md-10">
-                <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" required/>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="button" class="btn btn-default" onclick="sbmt()" value="登陆"></input>
-                <input type="button" type="reset" class="btn btn-primary" value="重置"></input>
-            </div>
-        </div>
-    </form>
-    
-</div>
+ <div class="container">
+        <div class="card card-container">      
+            <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
+            <p id="profile-name" class="profile-name-card"></p>
+            <form class="form-signin">              
+                <input type="text" class="form-control" id="userName" name="userName" placeholder="请输入用户名"  required autofocus>
+                <input type="password" id="password" name="password" class="form-control" placeholder="请输入密码" required>
+                <div  class="checkbox">
+                    <label>
+                        <input type="checkbox" name="remember"> Remember me
+                    </label>
+                </div>
+                <input type="button" class="btn btn-lg btn-primary btn-block btn-signin"  onclick="sbmt()" value="Sign in"></input>
+            </form><!-- /form -->          
+        </div><!-- /card-container -->
+    </div><!-- /container -->
 </body>
 </html>

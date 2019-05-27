@@ -13,15 +13,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.alibaba.fastjson.JSON;
 
 import cn.cs.fileManager.FileManagerApplication;
 import cn.cs.fileManager.dao.mapper.FmUserMapper;
 import cn.cs.fileManager.dao.model.FmUser;
 import cn.cs.fileManager.dao.model.FmUserExample;
 import cn.cs.fileManager.dao.model.FmUserExample.Criteria;
+import cn.cs.fileManager.dto.FmUserDTO;
+import cn.cs.fileManager.form.LoginForm;
+import cn.cs.fileManager.form.LoginUser;
 
 /**
  * @author dac
@@ -35,10 +43,12 @@ public class UserService implements IUserService {
     private FmUserMapper fmUserMapper;
   
     private static final Logger logger=LoggerFactory.getLogger(UserService.class);
+   
     final Base64.Decoder decoder = Base64.getDecoder();
     final Base64.Encoder encoder = Base64.getEncoder();
    
-
+    
+   
     /* (non-Javadoc)
      * @see cn.cs.fileManager.service.IUserService#getUserList()
      */
@@ -88,9 +98,7 @@ public class UserService implements IUserService {
             case "valid":
                 criteria.andValidEqualTo(val);
                 break;
-            case "type":
-                criteria.andTypeEqualTo(val);
-                break;
+          
          }            
         }
                   
@@ -107,34 +115,7 @@ public class UserService implements IUserService {
         return list;
     }
     
-    @Override
-    @Cacheable(value = "cn.cs.fileManager.dao.model.FmUser", key = "#root.targetClass + #root.methodName")
-    public FmUser getUser(String login_name,String password) {
-        FmUserExample fe = new FmUserExample();
-        Criteria criteria = fe.createCriteria();
-        try {
-            byte[] textByte = password.getBytes("UTF-8");
-            password=encoder.encodeToString(textByte);
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            logger.debug("密码base64加密错误");
-        }
-        criteria.andLoginNameEqualTo(login_name);
-        criteria.andPasswordEqualTo(password);
-        List<FmUser> list=fmUserMapper.selectByExample(fe);
-        
-        if(list.size()==1)
-        {
-            FmUser u=list.get(0);
-            u.setPassword(new String(decoder.decode(u.getPassword())));
-            logger.info("根据用户名和密码查找到用户");
-            return u;
-        }
-        else
-        {
-            return null;
-        }
-    }
+    
     
     @Override
     @Cacheable(value = "cn.cs.fileManager.dao.model.FmUser", key = "#root.targetClass + #root.methodName")
@@ -206,5 +187,8 @@ public class UserService implements IUserService {
         else
             return false;
     }
+
+	
+	
 
 }

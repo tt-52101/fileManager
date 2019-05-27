@@ -18,11 +18,13 @@ import cn.cs.fileManager.dao.model.FmUserExample;
 @Service
 public  class UploadService   implements IUploadService{
     @Autowired
-private FmFileMapper fmFileMapper;
+    private FmFileMapper fmFileMapper;
+    
     @Autowired
     private FmFileTypeMapper fmFileTypeMapper;
     public static long fm_file_type_id ;    
     public static long limitSize=10000; 
+    
     @Override
     @Cacheable(value = "cn.cs.fileManager.dao.model.FmFile", key = "#root.targetClass + #root.methodName")
 public boolean insert(String trueName,long fileSize,String UUIDfileName,long folderid,long account) {

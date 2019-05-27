@@ -44,7 +44,7 @@ public class DownloadController {
     @ResponseBody
     public void  download(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
-    	System.out.println("de");
+    	
 
 		 String fileName = request.getParameter("fileName");
 		 String filetruename = request.getParameter("filetruename");

@@ -35,7 +35,7 @@ import cn.cs.fileManager.dao.mapper.FmUserMapper;
 import cn.cs.fileManager.dao.model.FmUser;
 import cn.cs.fileManager.service.IUserService;
 
-@Controller
+@RestController
 public class UserController {
 
     @Autowired
@@ -43,35 +43,34 @@ public class UserController {
     private static final Logger logger=LoggerFactory.getLogger(UserController.class);
     
 
-    @RequestMapping(value = {"/login"},method = {RequestMethod.POST})
-    @ResponseBody
-    //必须加上@responsebody 发现它的作用是将你代码return的值作为http请求的内容发挥客户端
-    //如果之前没写这个注解，所以，http请求的内容默认将是一个页面。    
-    public JSONObject login(@RequestBody String params,HttpServletRequest request)  {
-        
-        JSONObject obj=JSON.parseObject(params);
-        FmUser u=this.userService.getUser(obj.getString("name"),obj.getString("password"));
-        
-        if(u!=null && u.getValid().equalsIgnoreCase("1")) {
-            HttpSession session=request.getSession();//这就是session的创建
-            session.setAttribute("user", u);//session set user          
-            logger.info("session创建完毕");
-            if(this.userService.updateTime(u))
-                logger.info("更新登录时间成功");
-            JSONObject o= new JSONObject();
-            o.put("type", u.getType());
-            return o;            
-        }else
-        {
-            logger.info("用户不存在或者是已经离职");
-            return null;
-        }          
-    }
-    
-   
+//    @RequestMapping(value = {"/login"},method = {RequestMethod.POST})
+//    @ResponseBody
+//    //必须加上@responsebody 发现它的作用是将你代码return的值作为http请求的内容发挥客户端
+//    //如果之前没写这个注解，所以，http请求的内容默认将是一个页面。    
+////    public JSONObject login(@RequestBody String params,HttpServletRequest request)  {
+////        
+////        JSONObject obj=JSON.parseObject(params);
+////        FmUser u=this.userService.getUser(obj.getString("name"),obj.getString("password"));
+////        
+////        if(u!=null && u.getValid().equalsIgnoreCase("1")) {
+////            HttpSession session=request.getSession();//这就是session的创建
+////            session.setAttribute("user", u);//session set user          
+////            logger.info("session创建完毕");
+////            if(this.userService.updateTime(u))
+////                logger.info("更新登录时间成功");
+////            JSONObject o= new JSONObject();
+////            
+////            return o;            
+////        }else
+////        {
+////            logger.info("用户不存在或者是已经离职");
+////            return null;
+////        }          
+////    }
+////    
+//   
     
     @RequestMapping(value = {"/allusers"},method = {RequestMethod.POST})
-    @ResponseBody  
     public JSONObject GetAllUsers(@RequestParam int start,
             @RequestParam int length,@RequestParam int draw,
             @RequestParam String searchval,@RequestParam( value="order[column]") int column,
@@ -82,7 +81,8 @@ public class UserController {
         logger.info("start:"+start+"  length: "+length+"  draw: "+draw+"  searchval: "+searchval+" order by "+column+" "+dir);
 
         FmUser u=(FmUser) session.getAttribute("user");
-        if(u!=null && u.getValid().equals("1") && u.getType().equals("0"))
+        //&& u.getType().equals("0")
+        if(u!=null && u.getValid().equals("1") )
         {
             logger.info("获得查询所有用户信息权限");
             PageHelper.startPage(start, length);
@@ -111,7 +111,6 @@ public class UserController {
     }
      
     @RequestMapping(value = {"/checkloginname"},method = {RequestMethod.POST})
-    @ResponseBody 
     public JSONObject checkloginname(@RequestBody String param,HttpServletRequest request)  {
         JSONObject obj=JSON.parseObject(param);
         long count=this.userService.checkUserName(obj.getString("loginname"));
@@ -130,8 +129,7 @@ public class UserController {
             
         }          
     }
-    @RequestMapping(value = {"/register"},method = {RequestMethod.POST})
-    @ResponseBody  
+    @RequestMapping(value = {"/register"},method = {RequestMethod.POST}) 
     public FmUser register(@RequestBody String param,HttpServletRequest request)  {
         JSONObject obj=JSON.parseObject(param);
         FmUser u=new FmUser();
@@ -139,7 +137,6 @@ public class UserController {
         u.setMobileNumber(obj.getString("mobileNumber"));
         u.setPassword(obj.getString("password"));
         u.setLastLoginDate(new Date());     
-        u.setType("1");
         u.setValid("1");
         boolean flag=this.userService.register(u);
         if(flag) {
@@ -155,8 +152,7 @@ public class UserController {
         }       
     }
     
-    @RequestMapping(value = {"/getpsnlmsg"},method = {RequestMethod.POST})
-    @ResponseBody  
+    @RequestMapping(value = {"/getpsnlmsg"},method = {RequestMethod.POST}) 
     public FmUser getpsnlmsg(HttpServletRequest request)  {         
         HttpSession session = request.getSession();         
         FmUser u=(FmUser) session.getAttribute("user");
@@ -174,38 +170,38 @@ public class UserController {
                 
     }
     
-    @RequestMapping(value = {"/update"},method = {RequestMethod.POST})
-    @ResponseBody  
-    public JSONObject update(@RequestBody String param,HttpServletRequest request)  {
-        JSONObject obj=JSON.parseObject(param);
-        FmUser record=new FmUser();
-        record.setId(Long.parseLong(obj.getString("id")));
-        record.setLoginName(obj.getString("loginName"));
-        record.setMobileNumber(obj.getString("mobileNumber"));
-        record.setPassword(obj.getString("password"));              
-        record.setType(obj.getString("type"));
-        record.setValid(obj.getString("valid"));
-        boolean flag=this.userService.update(record);
-        
-        
-        if(flag) {
-            logger.info("数据库中用户信息更新完成");
-            JSONObject data=new JSONObject();
-            data.put("tip", "成功");          
-            //更新session中的user内容
-            HttpSession session=request.getSession(false);
-            FmUser current=(FmUser) session.getAttribute("user");//session set user 
-            if(current.getId()==record.getId())
-            {
-                FmUser u=this.userService.getUser(obj.getString("loginName"),obj.getString("password"));
-                session.setAttribute("user", u);
-                logger.info("session中用户信息更新");
-            }               
-            return data;
-        }else
-        {
-            logger.info("数据库中用户信息更新失败");                        
-            return null;
-        }           
-    }
+//    @RequestMapping(value = {"/update"},method = {RequestMethod.POST})
+//    @ResponseBody  
+//    public JSONObject update(@RequestBody String param,HttpServletRequest request)  {
+//        JSONObject obj=JSON.parseObject(param);
+//        FmUser record=new FmUser();
+//        record.setId(Long.parseLong(obj.getString("id")));
+//        record.setLoginName(obj.getString("loginName"));
+//        record.setMobileNumber(obj.getString("mobileNumber"));
+//        record.setPassword(obj.getString("password"));              
+//        
+//        record.setValid(obj.getString("valid"));
+//        boolean flag=this.userService.update(record);
+//        
+//        
+//        if(flag) {
+//            logger.info("数据库中用户信息更新完成");
+//            JSONObject data=new JSONObject();
+//            data.put("tip", "成功");          
+//            //更新session中的user内容
+//            HttpSession session=request.getSession(false);
+//            FmUser current=(FmUser) session.getAttribute("user");//session set user 
+//            if(current.getId()==record.getId())
+//            {
+//                FmUser u=this.userService.getUser(obj.getString("loginName"),obj.getString("password"));
+//                session.setAttribute("user", u);
+//                logger.info("session中用户信息更新");
+//            }               
+//            return data;
+//        }else
+//        {
+//            logger.info("数据库中用户信息更新失败");                        
+//            return null;
+//        }           
+//    }
 }

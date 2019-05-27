@@ -10,5 +10,7 @@
     <table schema="" tableName="fm_file"></table>
     <table schema="" tableName="fm_file_type"></table>
     <table schema="" tableName="fm_folder"></table>
+    <table schema="" tableName="fm_role"></table>
+    <table schema="" tableName="fm_user_role"></table>
   </context>
 </generatorConfiguration>

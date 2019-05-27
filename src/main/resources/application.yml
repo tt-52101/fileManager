@@ -15,3 +15,9 @@ logging:  file: logs/fm.log
     druid.sql: info
     cn.cs.fileManager: debug
    
+jwt:
+  tokenHeader: Authorization
+  tokenPrefix: Bearer
+  secret: lanjwt
+  expiration: 3600
+  rememberExpiration: 604800
