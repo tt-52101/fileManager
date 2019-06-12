@@ -43,6 +43,7 @@ public class FolderService  implements IFolderService {
         	criteria.andRegAccountEqualTo(userid);
         }       
         criteria.andPIdEqualTo(pid);
+        criteria.andValidEqualTo("1");
         List<FmFolder> list = fmfoldermapper.selectByExample(fe);
         return list;
 	}
@@ -76,48 +77,31 @@ public class FolderService  implements IFolderService {
 	}
 	@Override
 	@Cacheable(value = "cn.cs.fileManager.dao.model.FmFolder", key = "#root.targetClass + #root.methodName")
-	public void newFolder(String xulie)
-	{
-		JSONObject xxulie=JSON.parseObject(xulie);
-		 String foldername=xxulie.getString("foldername");
-		 long pid=Long.parseLong(xxulie.getString("pid"));
-		 
-		 String basedir=xxulie.getString("basedir");
-		 long regaccount=Long.parseLong(xxulie.getString("regaccount"));
-		 String description=xxulie.getString("description");
-		 String valid=xxulie.getString("valid");
-		 basedir+="\\"+foldername;
-		 logger.info("创建文件夹路径"+basedir);
-		 
-		 FmFolder fmf=new FmFolder();
-		 fmf.setBaseDir(basedir);
-		 fmf.setDescription(description);
-		 fmf.setFolderName(foldername);
-		 
-		 fmf.setRegDate(new Date());
-		 fmf.setRegAccount(regaccount);
-		 fmf.setValid(valid);
-		 fmf.setpId(pid);
-		 fmfoldermapper.insert(fmf);
-		 File file=new File(basedir);
-			if(!file.exists()){//如果文件夹不存在
-				file.mkdir();//创建文件夹
-			}
-			
+	/*
+	 * requried:foldername pid regaccount basedir     
+	 * valid & RegDate not necessary
+	 */
+	public int newFolder(FmFolder folder)
+	{ 			
+		folder.setRegDate(new Date());
+		folder.setValid("1");	 
+		int result= fmfoldermapper.insert(folder);
+		File file=new File(folder.getBaseDir());
+		
+		if(!file.exists()){//如果文件夹不存在
+			file.mkdir();//创建文件夹
+		}
+			return result;
 	}
+	
 	@Override
 	@Cacheable(value = "cn.cs.fileManager.dao.model.FmFolder", key = "#root.targetClass + #root.methodName")
-	public void updateFolder(String canshu)
+	public void updateFolder(FmFolder fmFolder)
 	{
-		JSONObject ccanshu=JSON.parseObject(canshu);
-		long id=Long.parseLong(ccanshu.getString("id"));
-		String valid=ccanshu.getString("valid");
-		FmFolder fmf=new FmFolder();
-		fmf.setValid(valid);
 		FmFolderExample fe = new FmFolderExample();
         Criteria criteria = fe.createCriteria();
-        criteria.andIdEqualTo(id);
-		fmfoldermapper.updateByExampleSelective(fmf, fe);
+        criteria.andIdEqualTo(fmFolder.getId());
+		fmfoldermapper.updateByExampleSelective(fmFolder, fe);
 	}
 	
 	@Override
@@ -126,10 +110,29 @@ public class FolderService  implements IFolderService {
 	{
 		FmFolderExample fe = new FmFolderExample();
         Criteria criteria = fe.createCriteria();
-        criteria.andRegAccountEqualTo(userid);
+        if(isNormal)
+        {
+        	 criteria.andRegAccountEqualTo(userid);
+        }
         criteria.andValidEqualTo("0");
         List<FmFolder> list = fmfoldermapper.selectByExample(fe);
         return list;
+	}
+	
+	@Override
+	@Cacheable(value = "cn.cs.fileManager.dao.model.FmFolder", key = "#root.targetClass + #root.methodName")
+	public boolean deleteFolderRecord(long folderid) {
+		FmFolderExample fe = new FmFolderExample();
+        Criteria criteria = fe.createCriteria();
+        criteria.andIdEqualTo(folderid);
+        criteria.andValidEqualTo("0");
+        int flag = fmfoldermapper.deleteByExample(fe);
+        if(flag>0)
+        {
+        	return true;
+        }else {
+        	return false;
+        }
 	}
 
 }

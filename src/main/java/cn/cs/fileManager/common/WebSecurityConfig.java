@@ -27,6 +27,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private FmUserServiceDetails userService;
+    
+    @Override  
+    public void configure(WebSecurity web) throws Exception {  
+        // 设置不拦截规则  
+        web.ignoring().antMatchers("/swagger-resources/**",
+        		"/v2/api-docs",
+                "/swagger-ui.html**" ,		                
+                "/fm/register.html",
+                "/fm/login.html",
+                "/fm/res/**",
+                "/fm/js/**",
+                "/fm/image/**",
+                "/fm/DataTables/**",
+                "/fm/css/**",
+                "/webjars/**",
+                "/upload",
+                "/register",//调试结束后删除
+                "/checkloginname");  
+  
+    }  
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -35,28 +55,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     	//设置URL Matcher，antMatchers，mvcMatchers，regexMatchers或者直接设置一个一个或者多个RequestMatcher对象;
     	//上边设置matchers的方法会返回一个AuthorizedUrl对象，用于接着设置符合其规则的URL的权限信息，AuthorizedUrl对象提供了access方法用于设置一个权限表达式，
     	//比如说字符串“hasRole(‘ADMIN’) and hasRole(‘DBA’)”
+    	//关闭默认打开的crsf protection
         http.cors().and().csrf().disable().authorizeRequests()
-		        .antMatchers(
-		        		"/swagger-resources/**",
-		        		"/v2/api-docs",
-		                "/swagger-ui.html**" ,		                
-		                "/fm/register.html",
-		                "/fm/login.html",
-		                "/fm/res/**",
-		                "/fm/js/**",
-		                "/fm/image/**",
-		                "/fm/DataTables/**",
-		                "/fm/css/**",
-		                "/webjars/**"		      
-		                ).permitAll()               
-                .anyRequest().authenticated()
-//                .anyRequest()
-//                .access("@rbacauthorityservice.hasPermission(request,authentication)")
+        		.antMatchers("/fm/allusers.html").hasRole("ADMIN")
+                .antMatchers("/").hasRole("USER")
                 .and()
                 .formLogin()// 表单登录  来身份认证
-                .loginPage("/fm/login.html")// 自定义登录页面               
+                .loginPage("/fm/login.html")// 自定义登录页面  
+                .and().headers().frameOptions().sameOrigin()
                 .and()
-
                 .addFilter(new JwtLoginFilter(authenticationManager()))
                 .addFilter(new JwtAuthenticationFilter(authenticationManager()))
                 .exceptionHandling().accessDeniedHandler(new RestAuthenticationAccessDeniedHandler())

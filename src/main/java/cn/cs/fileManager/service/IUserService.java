@@ -16,9 +16,8 @@ public interface IUserService {
 
     List<FmUser> getUserList();
 //    FmUser getUser(String login_name,String password);
-    long checkUserName(String login_name);
+    long getNumsOfLoginName(String loginName);
     boolean register(FmUser u);	
-	boolean updateTime(FmUser u);
-	boolean update(FmUser u);
+	boolean updateUserInfo(FmUser record);
 	List<FmUser> getUsersBySth(String attr,String val,int column,String dir);
 }

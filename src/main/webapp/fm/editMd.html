@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Full example - Editor.md examples</title>
+
+    <link rel="stylesheet" href="editor.md-master/examples/css/style.css" />
+    <link rel="stylesheet" href="editor.md-master/css/editormd.css" />
+    <link rel="shortcut icon" href="https://pandao.github.io/editor.md/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="res/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+</head>
+
+<body>
+
+    <div id="layout">
+        <div class="btns">
+            <h4>markdown文件编辑</h4>
+            <button style="margin-left:94%;" id="get-md-btn">保存</button>
+        </div>
+        <div id="test-editormd"></div>
+    </div>
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="editor.md-master/editormd.js"></script>
+    <script type="text/javascript">
+        var testEditor;
+        var fileid = window.location.href.split("=")[1];
+        $(document).ready(function () {
+            var fileid = window.location.href.split('=')[1];
+            $.ajax({
+                type: 'post',
+                url: '/readMdFileContent',
+                data: JSON.stringify(fileid),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (res) {
+                    var resJson = JSON.parse(res);
+                    var md = resJson.fileContent;
+                    testEditor = editormd("test-editormd", {
+                        width: "90%",
+                        height: 740,
+                        path: './editor.md-master/lib/',
+                        markdown: md,
+                        codeFold: true,
+                        //syncScrolling : false,
+                        saveHTMLToTextarea: true,    // 保存 HTML 到 Textarea
+                        searchReplace: true,
+                        //watch : false,                // 关闭实时预览
+                        htmlDecode: "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启
+                        //toolbar  : false,             //关闭工具栏
+                        //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
+                        emoji: true,
+                        taskList: true,
+                        tocm: true,         // Using [TOCM]
+                        tex: true,                   // 开启科学公式TeX语言支持，默认关闭
+                        flowChart: true,             // 开启流程图支持，默认关闭
+                        sequenceDiagram: true,       // 开启时序/序列图支持，默认关闭,
+                        //dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为true
+                        //dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为true
+                        //dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为true
+                        //dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为0.1
+                        //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
+                        imageUpload: true,
+                        imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                        imageUploadURL: "./php/upload.php",
+                        // onload: function () {
+                        //     console.log('onload', this);
+                        // }
+                    });
+
+                },
+                error: function (res) {
+                    alert("请求错误！");
+                }
+            })
+
+            $("#get-md-btn").bind('click', function () {
+                var reqBody = { 'fileid': fileid, "fileContent": testEditor.getMarkdown() };
+                $.ajax({
+                    type: 'post',
+                    url: '/writeMdFileContent',
+                    data: JSON.stringify(reqBody),
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function (res) {
+                        alert("保存成功！");
+                    },
+                    error: function (res) {
+                        alert("请求失败！");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

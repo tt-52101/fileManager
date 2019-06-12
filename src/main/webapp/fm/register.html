@@ -1,119 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <link href="res/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet"  type="text/css"/>
+    <link href="res/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/login.css" rel="stylesheet" type="text/css" />
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="res/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="res/jquery-validation-1.19.0/dist/jquery.validate.min.js"></script>
+    <script src="js/register_validate.js"></script>
+    <script>
+        $.fn.serializeObject = function () {
+            var o = {};//o is a object-->
+            var a = this.serializeArray();//this是$("#registForm")对象-->
+            $.each(a, function () {
+                if (o[this.name] != undefined && this.name != "password") {//有name相同的项的时候-->
+                    //Array.prototype.push,判断是不是存的[]-->
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    //Appends the arguments to the end of the array-->
+                    o[this.name].push(this.value || '');
+                } else {
+                    if(this.name !== "repassword"){
+                        o[this.name] = this.value || '';
+                    }
+                    
+                }
+            });
+            console.log(o);
+            return o;
+        };
+
+        function sbmt() {
+            alert("sbmt");
+            $.ajax({
+                type: "POST",//方法类型
+                dataType: "json",//预期服务器返回的数据类型
+                url: "/register",//url  
+                data: JSON.stringify($("#registForm").serializeObject()),
+                contentType: "application/json",
+                success: function () {
+                    window.location.href = "/fm/login.html";
+                },
+                error: function (result) {
+                    console.log(result)
+                    alert(result.msg)
+                },
+            });
+        }
+    </script>
 </head>
 
 <body>
 
-<div class="container" style="width: 40%;margin-top: 50px;">
-    <fieldset>
-        <legend>注册</legend>
-    </fieldset>
+    <div class="container">
+        <div class="card card-container">
 
-    <form class="form-horizontal" id="registForm">
-        <div class="form-group">
-            <label for="loginName" class="col-md-2 control-label">登录名： </label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" id="loginName" name="loginName" placeholder="请输入登录名"/>
+            <div class="panel-heading">
+                <div class="panel-title text-center">
+                    <h1 class="title">register</h1>
+                    <hr />
+                </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label for="password" class="col-md-2 control-label">密码： </label>
-            <div class="col-md-10">
-                <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码"/>
-            </div>
-        </div>
 
-        <div class="form-group">
-            <label for="repassword" class="col-md-2 control-label">确认密码： </label>
-            <div class="col-md-10">
-                <input type="password" class="form-control" id="repassword" name="repassword" placeholder="请输入确认密码"/>
-            </div>
-        </div>
+            <form class="form-signin" id="registForm">
+                <div class="form-group">
+                    <label for="loginName" class="cols-sm-2 control-label">登录名</label>
+                    <div class="cols-sm-10">
 
-        <div class="form-group">
-            <label for="mobileNumber" class="col-md-2 control-label">电话： </label>
-            <div class="col-md-10">
-                <input type="text" class="form-control" id="mobileNumber" name="mobileNumber" placeholder="请输入电话号码"/>
-            </div>
-        </div>
+                        <input type="text" class="form-control" id="loginName" name="loginName" placeholder="请输入登录名" />
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <button id="subt" type="submit" class="btn btn-default">注册</button>
-                <button class="btn btn-primary" type="reset">重置</button>
-            </div>
-        </div>
-    </form>
-</div>
-
-<script src="js/jquery-3.3.1.min.js"></script>
-<script src="res/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-<script src="res/jquery-validation-1.19.0/dist/jquery.validate.min.js"></script>
-<script src="js/register_validate.js"></script>
-<script>
-    $.fn.serializeObject = function () {
-        var o = {};//o is a object-->
-        var a = this.serializeArray();//this是$("#registForm")对象-->
-        $.each(a, function () {
-            if (o[this.name] != undefined && this.name != "password") {//有name相同的项的时候-->
-                //Array.prototype.push,判断是不是存的[]-->
-                if (!o[this.name].push) {
-                    o[this.name] = [o[this.name]];
-                }
-                //Appends the arguments to the end of the array-->
-                o[this.name].push(this.value || '');
-            } else {
-                o[this.name] = this.value || '';
-            }
-        });
-        return o;
-    };
+                    </div>
+                </div>
+                <div class="form-group">
+                        <label for="name" class="cols-sm-2 control-label">姓名</label>
+                        <div class="cols-sm-10">
     
-    function sbmt() {
-        alert("sbmt ajax...");
-        $.ajax({
-            type: "POST",//方法类型
-            dataType: "json",//预期服务器返回的数据类型
-            url: "/register",//url
-            data: JSON.stringify($("#registForm").serializeObject()),
-            contentType: "application/json",
-            success: function (result) {
-                var obj = {};
-                obj.pid = 0;
-                obj.foldername = result.loginName;
-                obj.owner = result.loginName;
-                obj.basedir = "E:\\test";
-                obj.regaccount = result.loginName;
-                obj.description = "无";
-                obj.valid = 1;
+                            <input type="text" class="form-control" id="name" name="name" placeholder="请输入登录名" />
+    
+                        </div>
+                    </div>
 
-                //创建用户的文件夹
-                $.ajax({
-                    type: "POST",//方法类型
-                    dataType: "json",//预期服务器返回的数据类型
-                    url: "/xinjian",//url
-                    data: JSON.stringify(obj),
-                    contentType: "application/json",
-                    success: function () {
-                        window.location.href = "/fm/login.html";
-                    },
-                    error: function () {
-                        window.location.href = "/fm/login.html";
-                    }
-                })
-            },
-            error: function () {
-                alert("异常！");
-            }
-        });
-    }
-</script>
+                <div class="form-group">
+                    <label for="password" class="cols-sm-2 control-label">密码</label>
+                    <div class="cols-sm-10">
+
+                        <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" />
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="repassword" class="cols-sm-2 control-label">确认密码： </label>
+                    <div class="cols-sm-10">
+
+
+                        <input type="password" class="form-control" id="repassword" name="repassword"
+                            placeholder="请输入确认密码" />
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mobileNumber" class="cols-sm-2 control-label">电话： </label>
+                    <div class="cols-sm-10">
+
+                        <input type="text" class="form-control" id="mobileNumber" name="mobileNumber"
+                            placeholder="请输入电话号码" />
+
+                    </div>
+                </div>
+
+                <button  type="button" class="btn btn-lg btn-primary btn-block btn-signin" onclick="sbmt()">注册</button>
+
+            </form>
+
+        </div>
+    </div>
 </body>
+
 </html>

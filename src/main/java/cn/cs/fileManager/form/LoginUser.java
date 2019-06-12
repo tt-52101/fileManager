@@ -6,7 +6,7 @@ public class LoginUser {
 	/**
      * 用户手机号码
      */
-    private String userName;
+    private String loginName;
    
 
     /**

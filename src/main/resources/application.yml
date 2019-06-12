@@ -21,3 +21,9 @@ jwt:
   secret: lanjwt
   expiration: 3600
   rememberExpiration: 604800
+  
+custom:
+  AdminRole: 1
+  NormalRole: 2
+  RootFilePath: E:\test
+    

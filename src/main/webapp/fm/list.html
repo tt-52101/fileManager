@@ -1,696 +1,525 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>folderlist</title>
-<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-<link rel="stylesheet" href="./res/bootstrap-3.3.7-dist/css/bootstrap.min.css" type="text/css">
-<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="http://malsup.github.com/jquery.form.js"></script>
-<style>
-    .fakeimg {
-        height: 200px;
-         background: #aaa;
-    }
-</style>
-</head>
-<body>
 
- 
-<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
-      </button>
-      <a class="navbar-brand" href="#">网盘测试版</a>
-    </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav">
-         <!--<li class="active"><a href="#">主页</a></li> 
+<head>
+	<meta charset="UTF-8">
+	<title>folderlist</title>
+	<link rel="stylesheet" href="./res/bootstrap-3.3.7-dist/css/bootstrap.min.css" type="text/css">
+	<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="js/jquery.form.js"></script>
+	<script src="./res/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+	<script src="https://cdn.bootcss.com/limonte-sweetalert2/7.33.1/sweetalert2.all.js"></script>
+	<script src="res/jquery-validation-1.19.0/dist/jquery.validate.min.js"></script>
+	<style>
+		.fakeimg {
+			height: 200px;
+			background: #aaa;
+		}
+	</style>
+</head>
+
+<body>
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">网盘测试版</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav">
+					<!--<li class="active"><a href="#">主页</a></li> 
           <li><a href="#">页面 2</a></li>
         <li><a href="#">页面 3</a></li>-->
-      </ul>
-    </div>
-  </div>
-</nav>
- 
-<div class="container-fluid" style="height:500px">
-  <div class="row">
-    <div class="col-sm-2">
-     <ul class="nav nav-pills nav-stacked">
-	<li ><a href="javascript:;" onclick=xinjianxian()><span class="glyphicon glyphicon-folder-open"> 新建文件夹</span></a></li>
-	<li ><a href="javascript:;" onclick=uploadxian()><span class="glyphicon glyphicon-cloud-upload"> 上传文件</span></a></li>
-	<li ><a href="javascript:;" onclick=huishou()><span class="glyphicon glyphicon-trash"> 回收站</span></a></li>
-	<li ><a href="/fm/update.html"><span class="glyphicon glyphicon-user"> 修改个人信息</span></a></li>
-</ul>
-    </div>
-    <div class="col-sm-10" id="youyemian">
-    <a href="javascript:;" onclick='fanhui()'>返回上一级</a>|<span id='dangqian'></span>
-     <ul class="list-group" id="showdata"></ul>
-    </div>
-  </div>
-</div>
- 
-<div class="jumbotron text-center" style="margin-bottom:0;height:40px">
-  <p>design by Luna</p>
-</div>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid" style="height:500px">
+		<div class="row">
+			<div class="col-sm-2">
+				<ul class="nav nav-pills nav-stacked">
+					<li><a href="javascript:;" onclick=hui()><span class="glyphicon glyphicon-home">
+								主页</span></a></li>
+					<li><a href="javascript:;" onclick=renderNewFolderForm()><span
+								class="glyphicon glyphicon-folder-open">
+								新建文件夹</span></a></li>
+					<li><a href="javascript:;" onclick=renderUploadRSPage()><span
+								class="glyphicon glyphicon-cloud-upload">
+								上传文件</span></a></li>
+					<li><a href="javascript:;" onclick=recycle()><span class="glyphicon glyphicon-trash">
+								回收站</span></a></li>
+					<li><a href="javascript:;"><span class="glyphicon glyphicon-user" onclick=renderPsnlInfo()>
+								修改个人信息</span></a></li>
+					<!-- <li><a href="javascript:;"><span class="glyphicon glyphicon-user" onclick=renderPsnlInfo()>
+							修改个人信息</span></a></li> -->
+				</ul>
+			</div>
+			<div class="col-sm-10" id="youyemian">
+				<a href="javascript:;" onclick='fanhui()'>返回上一级</a>|<span id='showPath'></span>
+				<ul class="list-group" id="showdata"></ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="jumbotron text-center" style="margin-bottom:0;height:40px">
+		<p>design by Luna</p>
+	</div>
+
+	<div class="modal fade" role="dialog" id="modal">
+		<div class="modal-dialog" style="width: 98%;height: 100%;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="btn btn-default" style="margin-left:94%;" data-dismiss="modal">关闭弹窗</button>
+				</div>
+				<div class="modal-body" id="body">
+					<iframe id="pdfContent" height="100%" width="100%"></iframe>
+				</div>
+				<div class="modal-footer">
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
+
 <script type="text/javascript">
 
-var ald;
-var dqald;
-var dao=new Array();
-var userid;
+	var resultFromRequire;
+	var archiveFolderInfo = new Array();
+	//archiveFolderInfo 的指针 topOfArchFolder
+	topOfArchFolder = 0;
+	var pdfContent = $('#pdfContent');
 
-$(function(){
-	var ppid=0;	
-	obj={};
-	
-	$.ajax({
-		  type: "POST",//方法类型
-          dataType: "json",//预期服务器返回的数据类型
-          url: "/getpsnlmsg",
-          data:null,
-          contentType:"application/json",
-          success: function (result) {
-        	//alert(result);
-        	if(result.id==-1)
-        	{        		
-        		window.location.href="/fm/error.html";
-        	}
-            console.log(result);
-            userid=result.id;
-            shengcheng(ppid,'/getAllFolder',userid);
-            
-        },
-        error: function () {      
-        }
+	$(function () {
+
+		obj = {};
+
+		generate(0);
+
+		var height = $(window).height();
+		$('#body').attr("style", "height:" + (height - 10) + "px");
+		console.log("height: " + height);
+
 	})
 	
-})
-$(document).click(function(){
-	$("#qq").hide();
-})
-//显示参数fold 的id =ID的所有子文件夹 和文件 
-function show(ID)
-	{
-	
-	     var trData="";
-	     if(ald==''){
-	    	
-	     }
-	     else{
-	    	 for(var i=0;i<ald.length;i++)
-	         {
-	        	 if(ald[i].pId==ID&&ald[i].valid!=0){
-	        	  if(ID==0){
-	        		  trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' style='cursor:pointer' onclick=shengcheng("+ald[i].id+",'/getAllFolder','"+userid+"')>"+ ald[i].folderName+"</span>"+
-		                 "</li>"
-	        	  }
-	        	  else{
-	              trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' style='cursor:pointer' onclick=shengcheng("+ald[i].id+",'/getAllFolder','"+userid+"')>"+ ald[i].folderName+"</span>"+
-	                 "<a style='float:right' href='javascript:;' onclick='delfolder("+ald[i].id+")'>|删除</a></li>"
-	        	  }
-	        	 }
-	         }
-	    	 
-	         //$("#showdata").empty();
-	         //$("#showdata").append(trData);
-	     }
-	     require(ID,"/getAllfile",userid);
-	     if(ald==''&&trData==''){
-    	 }
-	     else{
-	    	 for(var i=0;i<ald.length;i++)
-	         {
-	    		 if(ald[i].valid!=0){
-	    		 if(ald[i].fileTypeId==1||ald[i].fileTypeId==2){
-	    			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' >"+ ald[i].fileTrueName+"</span>"+
-	                 "<a style='float:right' href='javascript:;' onclick='delfile("+ald[i].id+")'>|删除</a><a style='float:right' href='javascript:;' onclick='download1("+ald[i].id+")'>下载 |</a></li>"
-	    		 }
-	    		 else if(ald[i].fileTypeId==3){
-	    			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-list-alt' >"+ ald[i].fileTrueName+"</span>"+
-	                 "<a style='float:right' href='javascript:;' onclick='delfile("+ald[i].id+")'>|删除</a><a style='float:right' href='javascript:;' onclick='download1("+ald[i].id+")'>下载 |</a></li>"
-	    		 }
-	    		 else if(ald[i].fileTypeId==4||ald[i].fileTypeId==5){
-	    			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-picture' >"+ ald[i].fileTrueName+"</span>"+
-	                 "<a style='float:right' href='javascript:;' onclick='delfile("+ald[i].id+")'>|删除</a><a style='float:right' href='javascript:;' onclick='download1("+ald[i].id+")'>下载 |</a></li>"
-	    		 }
-	    		 else if(ald[i].fileTypeId==6){
-	    			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-music' >"+ ald[i].fileTrueName+"</span>"+
-	                 "<a style='float:right' href='javascript:;' onclick='delfile("+ald[i].id+")'>|删除</a><a style='float:right' href='javascript:;' onclick='download1("+ald[i].id+")'>下载 |</a></li>"
-	    		 }
-	    		 else if(ald[i].fileTypeId==7||ald[i].fileTypeId==8||ald[i].fileTypeId==9){
-	    			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-film' >"+ ald[i].fileTrueName+"</span>"+
-	                 "<a style='float:right' href='javascript:;' onclick='delfile("+ald[i].id+")'>|删除</a><a style='float:right' href='javascript:;' onclick='download1("+ald[i].id+")'>下载 |</a></li>"
-	    		 }
-	    		 else if(ald[i].fileTypeId==11){
-	    			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-tasks' >"+ ald[i].fileTrueName+"</span>"+
-	                 "<a style='float:right' href='javascript:;' onclick='delfile("+ald[i].id+")'>|删除</a><a style='float:right' href='javascript:;' onclick='download1("+ald[i].id+")'>下载 |</a></li>"
-	    		 }
-	    		 else{
-	    			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' >"+ ald[i].fileTrueName+"</span>"+
-	                 "<a style='float:right' href='javascript:;' onclick='delfile("+ald[i].id+")'>|删除</a><a style='float:right' href='javascript:;' onclick='download1("+ald[i].id+")'>下载 |</a></li>"
-	    		 }
-	    		 //trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' >"+ ald[i].folderName+"</span>"+
-                 //"<a style='float:right' href='javascript:;' onclick='delfolder("+ald[i].id+")'>|删除</a></li>"
-	    		 }
-	         }
-	     }
-	     $("#showdata").empty();
-         $("#showdata").append(trData);
+	//显示参数fold 的id =id的所有子文件夹 和文件 
+	function show(id) {
+		var trData = "";
+		if (resultFromRequire == '') {
+		}
+		else {
+			for (var i = 0; i < resultFromRequire.length; i++) {
+				if (resultFromRequire[i].pId == id && resultFromRequire[i].valid != 0) {
+					if (id == 0) {
+						trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' style='cursor:pointer' onclick=generate(" + resultFromRequire[i].id + ")>" + resultFromRequire[i].folderName + "</span>" +
+							"</li>"
+					}
+					else {
+						trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' style='cursor:pointer' onclick=generate(" + resultFromRequire[i].id + ")>" + resultFromRequire[i].folderName + "</span>" +
+							"<a style='float:right' href='javascript:;' onclick='setFolderValidZero(" + resultFromRequire[i].id + ")'>|删除</a></li>"
+					}
+				}
+			}
+		}
+		console.log("开始渲染文件")
+		require(id, "/getAllfile");
+		if (resultFromRequire == '' && trData == '') {
+		}
+		else {
+			for (var i = 0; i < resultFromRequire.length; i++) {
+				if (resultFromRequire[i].valid != 0) {
+					if ((resultFromRequire[i].fileTypeId > 0 && resultFromRequire[i].fileTypeId < 3) || resultFromRequire[i].fileTypeId == 10 || (resultFromRequire[i].fileTypeId > 11 && resultFromRequire[i].fileTypeId < 16)) {
+
+						if (resultFromRequire[i].fileTypeId == 13) {
+							console.log(resultFromRequire[i].fileTypeId)
+							trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' onclick=showFile(" + resultFromRequire[i].id + "," + resultFromRequire[i].fileTypeId + ") >" + resultFromRequire[i].fileTrueName + "</span>" +
+								"<a style='float:right' href='javascript:;' onclick='setFileValidZero(" + resultFromRequire[i].id + ")'>|删除</a><a style='float:right' href='javascript:;' onclick='downloadfile(" + resultFromRequire[i].id + ")'>下载 |</a>" +
+								"<a style='float:right' href='javascript:;' onclick='editMd(" + resultFromRequire[i].id + ")'>编辑 |</a></li>"
+						} else {
+							trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' onclick=showFile(" + resultFromRequire[i].id + "," + resultFromRequire[i].fileTypeId + ") >" + resultFromRequire[i].fileTrueName + "</span>" +
+								"<a style='float:right' href='javascript:;' onclick='setFileValidZero(" + resultFromRequire[i].id + ")'>|删除</a><a style='float:right' href='javascript:;' onclick='downloadfile(" + resultFromRequire[i].id + ")'>下载 |</a></li>"
+						}
+					}
+					else if (resultFromRequire[i].fileTypeId == 3 || resultFromRequire[i].fileTypeId == 16) {
+						trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-list-alt' onclick=showFile(" + resultFromRequire[i].id + "," + resultFromRequire[i].fileTypeId + ")  >" + resultFromRequire[i].fileTrueName + "</span>" +
+							"<a style='float:right' href='javascript:;' onclick='setFileValidZero(" + resultFromRequire[i].id + ")'>|删除</a><a style='float:right' href='javascript:;' onclick='downloadfile(" + resultFromRequire[i].id + ")'>下载 |</a></li>"
+					}
+					else if (resultFromRequire[i].fileTypeId == 4 || resultFromRequire[i].fileTypeId == 5) {
+						trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-picture' onclick=showFile(" + resultFromRequire[i].id + "," + resultFromRequire[i].fileTypeId + ") >" + resultFromRequire[i].fileTrueName + "</span>" +
+							"<a style='float:right' href='javascript:;' onclick='setFileValidZero(" + resultFromRequire[i].id + ")'>|删除</a><a style='float:right' href='javascript:;' onclick='downloadfile(" + resultFromRequire[i].id + ")'>下载 |</a></li>"
+					}
+					else if (resultFromRequire[i].fileTypeId == 6) {
+						trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-music' onclick=showFile(" + resultFromRequire[i].id + "," + resultFromRequire[i].fileTypeId + ")  >" + resultFromRequire[i].fileTrueName + "</span>" +
+							"<a style='float:right' href='javascript:;' onclick='setFileValidZero(" + resultFromRequire[i].id + ")'>|删除</a><a style='float:right' href='javascript:;' onclick='downloadfile(" + resultFromRequire[i].id + ")'>下载 |</a></li>"
+					}
+					else if (resultFromRequire[i].fileTypeId == 7 || resultFromRequire[i].fileTypeId == 8 || resultFromRequire[i].fileTypeId == 9) {
+						trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-film' onclick=showFile(" + resultFromRequire[i].id + "," + resultFromRequire[i].fileTypeId + ") >" + resultFromRequire[i].fileTrueName + "</span>" +
+							"<a style='float:right' href='javascript:;' onclick='setFileValidZero(" + resultFromRequire[i].id + ")'>|删除</a><a style='float:right' href='javascript:;' onclick='downloadfile(" + resultFromRequire[i].id + ")'>下载 |</a></li>"
+					}
+					else if (resultFromRequire[i].fileTypeId == 11) {
+						trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-tasks' onclick=showFile(" + resultFromRequire[i].id + "," + resultFromRequire[i].fileTypeId + ") >" + resultFromRequire[i].fileTrueName + "</span>" +
+							"<a style='float:right' href='javascript:;' onclick='setFileValidZero(" + resultFromRequire[i].id + ")'>|删除</a><a style='float:right' href='javascript:;' onclick='downloadfile(" + resultFromRequire[i].id + ")'>下载 |</a></li>"
+					}
+					else {
+						trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' onclick=showFile(" + resultFromRequire[i].id + "," + resultFromRequire[i].fileTypeId + ") >" + resultFromRequire[i].fileTrueName + "</span>" +
+							"<a style='float:right' href='javascript:;' onclick='setFileValidZero(" + resultFromRequire[i].id + ")'>|删除</a><a style='float:right' href='javascript:;' onclick='downloadfile(" + resultFromRequire[i].id + ")'>下载 |</a></li>"
+					}
+				}
+			}
+		}
+		$("#showdata").empty();
+		$("#showdata").append(trData);
+	}
+	function editMd(fileid) {
+		var frameSrc = "editMd.html?file=" + fileid;
+		pdfContent.attr("src", frameSrc);
+		$('#modal').modal({
+			show: true,
+			backdrop: 'static'
+		});
 	}
 
-//文件下载
-function download1(id)
-{
-	var item=sessionStorage.getItem('item');
-	require(id,"/getnow",userid);
-   var fileName=ald.fileName;
-   var filetruename=ald.fileTrueName;
-   require(dao[item],"/getDangqian",userid);
-   var realPath=ald.baseDir;
+	function showFile(id, filetypeid) {
+		//jpg png 4 5
+		//1 txt 2 doc 3 xls 10 ppt 
+		//12 pdf
+		// 13 md 14 docx 15 pptx 16 xlsx 
 
-   window.location.href='/download?fileName='+fileName+'&filetruename='+filetruename+'&fid='+dao[item];
-}
-//回收站
-function huishou()
-{
-	require(0,"/huishouzhan",userid);
-	var trData="";
-    if(ald==''){
-    }
-    else{
-    	    trData+="<a href='javascript:;' onclick='hui()'>返回</a>"
-        	+"<ul class='list-group' id='showdata'>"
-       	    for(var i=0;i<ald.length;i++){
-                 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' onclick=shengcheng("+ald[i].id+",'/getAllFolder','"+userid+"')>"+ ald[i].folderName+"</span>"+
-                    "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanyuan("+ald[i].id+")'> 还原|</a></li>"
-           	 
-            }        
+		if (filetypeid == 4 || filetypeid == 5) {
+			//有问题
+			var frameSrc = "./showImg.html?file=" + id;
+			pdfContent.attr("src", frameSrc);
+			$('#modal').modal({
+				show: true,
+				backdrop: 'static'
+			});
+		}
+		else if ((filetypeid > 0 && filetypeid < 4) || (filetypeid == 10) || (filetypeid > 11 && filetypeid < 17)) {
+			if (filetypeid != 13) {
+				$.ajax({
+					type: 'post',
+					async: false,
+					url: '/convertFileFormat2PDF',
+					data: JSON.stringify(id),
+					dataType: 'json',
+					contentType: 'application/json',
+					success: function (res) {
+						var resJson = JSON.parse(res);
+						if (resJson.result === "success") {
+							var frameSrc = "./pdf_js/web/viewer.html?file=" + resJson.fileLocation;
+							console.log(frameSrc);
+							pdfContent.attr("src", frameSrc);
+							$('#modal').modal({
+								show: true,
+								backdrop: 'static'
+							});
+						}
+					},
+					error: function (res) {
+						swal({
+							title: '请求结果',
+							text: '请求错误！'
+						});
+					}
+				});
+			} else if (filetypeid == 13) {
+				var frameSrc = "./showMd.html?file=" + id;
+				pdfContent.attr("src", frameSrc);
+				$('#modal').modal({
+					show: true,
+					backdrop: 'static'
+				});
+			}
+		}
+		else {
+			swal({
+				title: '提示',
+				text: '不支持预览的文件类型！'
+			});
+		}
 	}
-    require(0,"/huishoufile",userid);
-    if(ald==''&&trData==''){
-		 trData+="<a href='javascript:;' onclick='hui()'>返回</a>";
-	 }
-    else if(trData==''&&ald!=''){
-    	 trData+="<a href='javascript:;' onclick='hui()'>返回</a>"
-         	+"<ul class='list-group' id='showdata'>"
-    	for(var i=0;i<ald.length;i++)
-        {
-   		 if(ald[i].fileTypeId==1||ald[i].fileTypeId==2){
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-   		 else if(ald[i].fileTypeId==3){
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-list-alt' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-   		 else if(ald[i].fileTypeId==4||ald[i].fileTypeId==5){
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-picture' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-   		 else if(ald[i].fileTypeId==6){
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-music' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-   		 else if(ald[i].fileTypeId==7||ald[i].fileTypeId==8||ald[i].fileTypeId==9){
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-film' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-   		 else if(ald[i].fileTypeId==11){
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-tasks' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-   		 else{
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-        }
-    	trData+="</ul>";
-    }
-    else
-    {
-    	for(var i=0;i<ald.length;i++)
-        {
-   		 if(ald[i].fileTypeId==1||ald[i].fileTypeId==2){
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-   		 else if(ald[i].fileTypeId==3){
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-list-alt' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-   		 else if(ald[i].fileTypeId==4||ald[i].fileTypeId==5){
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-picture' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-   		 else if(ald[i].fileTypeId==6){
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-music' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-   		 else if(ald[i].fileTypeId==7||ald[i].fileTypeId==8||ald[i].fileTypeId==9){
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-film' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-   		 else if(ald[i].fileTypeId==11){
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-tasks' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-   		 else{
-   			 trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' >"+ ald[i].fileTrueName+"</span>"+
-                "<a style='float:right' href='javascript:;' >|彻底删除</a><a style='float:right' href='javascript:;' onclick='huanfile("+ald[i].id+")'>还原|</a></li>"
-   		 }
-        }
-    	trData+="</ul>";
-    }
-    
-    $("#youyemian").empty();
-    $("#youyemian").append(trData);
-}
-//文件夹还原
-function huanyuan(id)
-{
-	require(id,"/folhuanyuan",userid);
-	alert("还原成功");
-	hui();
-}
-//文件还原
-function huanfile(id)
-{
-	require(id,"/huanfile",userid);
-	alert("还原成功");
-	hui();
-}
-//删除文件夹
-function delfolder(id)
-{
-	require(id,'/getAllFolder',userid);
-	if(ald!=''){
-   	    var choose=warning();
-   	    if(choose==false){}
-   	    else{
-   	    	var url='/delefolder';
-   	    	var delobj={"id":"","valid":""};
-   	    	delobj.id=id;
-   	    	delobj.valid=0;
-   	    	$.ajax({
-   	 		type: 'post',
-   	         url: url,
-   	         dataType:'json',
-   	         data:JSON.stringify(delobj),
-   	         contentType:"application/json",
-   	         async:false,
 
-   	 		})
-   	 		hui();
-   	    }
-    }
-	else{
-		var url='/delefolder';
-	    	var delobj={"id":"","valid":""};
-	    	delobj.id=id;
-	    	delobj.valid=0;
-	    	$.ajax({
-	 		type: 'post',
-	         url: url,
-	         dataType:'json',
-	         data:JSON.stringify(delobj),
-	         contentType:"application/json",
-	         async:false,
-	 		})
-	 		hui();
-	}
-	
-}
-//删除文件
-function delfile(id)
-{
-	var url='/delefile';
-	var delobj={"id":"","valid":""};
-	delobj.id=id;
-	delobj.valid=0;
-	$.ajax({
-		type: 'post',
-     url: url,
-     dataType:'json',
-     data:JSON.stringify(delobj),
-     contentType:"application/json",
-     async:false,
-		})
-	 hui();
-	
-}
-//删除文件夹前的警告
-function warning()
-{
-	var msg = "您当前文件夹下存在内容仍然选择一并删除吗？\n\n请确认！";
-	if (confirm(msg)==true){
-		return true;
-	}
-	else{
-		return false;
-	}
-}
-//文件夹重命名
-function renamexian(id)
-{
-	require(id,'/getDangqian',userid);
-	var foldname=ald.folderName;
-	var text="<a href='javascript:;' onclick='hui()'>返回</a>"
-		+"<form class='form-horizontal' role='form'>"
-	  +"<div class='form-group'>"
-	   +"<label  class='col-sm-2 control-label'>重命名</label>"
-	   +"<div class='col-sm-10'>"
-	     +"<input type='text' class='form-control' onchange='recheck($(this).val(),id)' name='foldername' value="+foldname+"><span style='color:red' id='warningInfo'></span></div></div>"
-	  +"<div class='form-group'>"
-	    +"<label  class='col-sm-2 control-label'>重新描述</label>"
-	   +"<div class='col-sm-10'>"
-	    +"<input type='text' class='form-control' name='description' value='无'></div></div>"
-	   +"<div class='form-group'>"
-	    +"<div class='col-sm-offset-2 col-sm-10'>"
-	     +"<input type='button'  class='btn btn-default' onclick='rename()' value='创建'></input></div></div></form>"
-	     $("#youyemian").append(text);
-		
-}
-//点击文件夹显示所有子文件夹,url在这个函数中是常量‘/getAllFolder’
-function shengcheng(pid,url,userid)
-{
-	url="/getAllFolder";
-	//保存用户的操作
-	fuid(pid);
-	//get all folders of pid owned by userid
-	require(pid,url,userid);
-	//显示参数fold 的id =ID的所有子文件夹 和文件
-	show(pid);
-	//显示当前文件路径
-	dangqian(pid);
-}
 
-//get all folders/files of pid 时 请求后端数据
-function require(pid,url,userid){
-	var pidobj={"id":"","userid":""};
-	pidobj.id=pid;
-	pidobj.userid=userid;
-	$.ajax({
-		type: 'post',
-        url: url,
-        dataType:'json',
-        data:JSON.stringify(pidobj),
-        contentType:"application/json",
-        async:false,
-        success: function (data) {
-            console.log(data);
-        	ald=data;
-        	
-        },
-        error: function () {
-
-        }
-	})
-	//console.log("zaiwaimian"+ald);
-}
-//返回上一级的函数
-function fanhui()
-{
-	var item=sessionStorage.getItem('item');
-	if(item==0){
-		alert('已经到达根目录无法再返回');
+	//文件下载
+	function downloadfile(id) {
+		window.location.href = "/download?id=" + id;
 	}
-	else
-	{
-		var id=dao[item];
-		var pidobj={"id":"","userid":""};
-		pidobj.userid=userid;
-		pidobj.id=id;
+
+	//回收站
+	function recycle() {
+		require(0, "/getRecycleFolder");
+		var trData = "";
+		if (resultFromRequire == '') {
+		}
+		else {
+			trData += "<a href='javascript:;' onclick='hui()'>返回</a>"
+				+ "<ul class='list-group' id='showdata'>"
+			for (var i = 0; i < resultFromRequire.length; i++) {
+				trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-folder-close' onclick=generate(" + resultFromRequire[i].id + ")>" + resultFromRequire[i].folderName + "</span>" +
+					"<a style='float:right' href='javascript:;' onclick=deleteFolder(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFolderValidOne(" + resultFromRequire[i].id + ")'> 还原|</a></li>"
+
+			}
+		}
+		require(0, "/getRecycleFile");
+		if (resultFromRequire == '' && trData == '') {
+			trData += "<a href='javascript:;' onclick='hui()'>返回</a>";
+		}
+		else if (trData == '' && resultFromRequire != '') {
+			trData += "<a href='javascript:;' onclick='hui()'>返回</a>"
+				+ "<ul class='list-group' id='showdata'>"
+			for (var i = 0; i < resultFromRequire.length; i++) {
+				if (resultFromRequire[i].fileTypeId == 1 || resultFromRequire[i].fileTypeId == 2) {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+				else if (resultFromRequire[i].fileTypeId == 3) {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-list-alt' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;'  onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+				else if (resultFromRequire[i].fileTypeId == 4 || resultFromRequire[i].fileTypeId == 5) {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-picture' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+				else if (resultFromRequire[i].fileTypeId == 6) {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-music' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+				else if (resultFromRequire[i].fileTypeId == 7 || resultFromRequire[i].fileTypeId == 8 || resultFromRequire[i].fileTypeId == 9) {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-film' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+				else if (resultFromRequire[i].fileTypeId == 11) {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-tasks' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+				else {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+			}
+			trData += "</ul>";
+		}
+		else {
+			for (var i = 0; i < resultFromRequire.length; i++) {
+				if (resultFromRequire[i].fileTypeId == 1 || resultFromRequire[i].fileTypeId == 2) {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+				else if (resultFromRequire[i].fileTypeId == 3) {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-list-alt' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+				else if (resultFromRequire[i].fileTypeId == 4 || resultFromRequire[i].fileTypeId == 5) {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-picture' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+				else if (resultFromRequire[i].fileTypeId == 6) {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-music' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+				else if (resultFromRequire[i].fileTypeId == 7 || resultFromRequire[i].fileTypeId == 8 || resultFromRequire[i].fileTypeId == 9) {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-film' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+				else if (resultFromRequire[i].fileTypeId == 11) {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-tasks' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+				else {
+					trData += "<li class='list-group-item list-group-item-action' ><span class='glyphicon glyphicon-file' >" + resultFromRequire[i].fileTrueName + "</span>" +
+						"<a style='float:right' href='javascript:;' onclick=deleteFile(" + resultFromRequire[i].id + ") >|彻底删除</a><a style='float:right' href='javascript:;' onclick='setFileValidOne(" + resultFromRequire[i].id + ")'>还原|</a></li>"
+				}
+			}
+			trData += "</ul>";
+		}
+
+		$("#youyemian").empty();
+		$("#youyemian").append(trData);
+	}
+	function reqForTip(id, url) {
 		$.ajax({
 			type: 'post',
-	        url: '/getPFolder',
-	        dataType:'text',
-	        data:JSON.stringify(pidobj),
-	        contentType:"application/json",
-	        async:false,
-	        success: function (data) {
-	            console.log(data);
-	            require(data,'/getAllFolder',userid);
-	            show(data);
-	            dangqian(data);
-	        },
-	        error: function () {
-	        	alert("异常");
-	        }
+			url: url,
+			dataType: 'json',
+			data: JSON.stringify(id),
+			contentType: "application/json",
+			async: false,
+			success: function (result) {
+				if (result.code == 0) {
+					alert("success");
+				}
+			},
+			error: function (result) {
+				alert(result.msg);
+			}
 		})
-		item--;
-		sessionStorage.setItem('item', item);
 	}
-}
-//显示当前文件路径
-function dangqian(id)
-{
-   var url='/getDangqian';
-   if(id==0){
-	   var text='';
-	   text+="<a href='javascript:;'>root</a>";
-	   $("#dangqian").empty();
-       $("#dangqian").append(text);
-   }
-   else{
-	   require(id,url,userid);
-	   var text='';
-	   text+=">"+"<a href='javascript:;'>"+ald.folderName+"</a>";
-	   console.log('第一次的pid应该为零'+ald.folderName+ald.pId)
-	   //传回当前文件夹的父文件夹的内容直到pid为零
-	   while(ald.pId!=0){
-		   require(ald.pId,url,userid);
-		   
-		   text=">"+"<a href='javascript:;'>"+ald.folderName+"</a>"+text;
-	   }
-	   text="<a href='javascript:;'>root</a>"+text;
-	   $("#dangqian").empty();
-       $("#dangqian").append(text);
-   }
-}
-//用户操作记录，记录从根目录到深层目录的每一步。
-//pid是指当前的文件夹的上一层的id
-function fuid(pid)
-{
-	if(pid==0){
-		sessionStorage.setItem('item', 0);
-		var item=sessionStorage.getItem('item');
-		dao[item]=pid;
+	function deleteFile(id) {
+		reqForTip(id, "/deleteFile");
+		recycle();
 	}
-	else{
-		var item=sessionStorage.getItem('item');
-		item++;
-		dao[item]=pid
-		sessionStorage.setItem('item', item);
+	function deleteFolder(id) {
+		reqForTip(id, "/deleteFolder");
+		recycle();
 	}
-}
+	//文件夹还原
+	function setFolderValidOne(id) {
+		reqForTip(id, "/setFolderValidOne");
+		recycle();
+	}
+	//文件还原
+	function setFileValidOne(id) {
+		reqForTip(id, "/setFileValidOne");
+		recycle();
+	}
 
-//新建文件夹将内容改变显示出来
-function xinjianxian()
-{
-	
-	var valid=1;
-	var item=sessionStorage.getItem('item');
-	if(item==0){
-		alert('对不起系统根目录下禁止新建文件夹与上传文件');
+	//删除文件夹
+	function setFolderValidZero(id) {
+		require(id, '/getAllFolder');
+		if (resultFromRequire != '') {
+			var choose = warning();
+			if (choose == false) { }
+			else {
+				reqForTip(id, '/setFolderValidZero');
+				hui();
+			}
+		}
+		else {
+			reqForTip(id, '/setFolderValidZero');
+			hui();
+		}
 	}
-	else{
-		var url='/getDangqian';
-		require(dao[item],url,userid);
-		var basedir=ald.baseDir;
-		var regaccount=userid;
-		
-	$('#youyemian').empty();
-	var text="<a href='javascript:;' onclick='hui()'>返回</a>"
-	+"<form class='form-horizontal' role='form' id='form1'>"
-  +"<div class='form-group'>"
-   +"<label  class='col-sm-2 control-label'>文件夹名称</label>"
-   +"<div class='col-sm-10'>"
-     +"<input type='text' class='form-control' onchange='check($(this).val())' name='foldername' value='新建文件夹'><span style='color:red' id='warningInfo'></span></div></div>"
-     +"<input type='hidden' name='pid' value="+dao[item]+">"
-     
-     +"<input type='hidden' name='basedir' value="+ald.baseDir+">"
-     +"<input type='hidden' name='regaccount' value="+regaccount+">"
-  +"<div class='form-group'>"
-    +"<label  class='col-sm-2 control-label'>描述</label>"
-   +"<div class='col-sm-10'>"
-    +"<input type='text' class='form-control' name='description' value='无'></div></div>"
-    +"<input type='hidden' name='valid' value="+valid+">"
-   +"<div class='form-group'>"
-    +"<div class='col-sm-offset-2 col-sm-10'>"
-     +"<input type='button'  class='btn btn-default' onclick='xinjian()' value='创建'></input></div></div></form>"
-     $("#youyemian").append(text);
-	}
-}
-//上传文件
-function uploadxian()
-{
-	var item=sessionStorage.getItem('item');
-	if(item==0){
-		alert('对不起系统根目录下禁止新建文件夹与上传文件');
-	}
-	else
-	{
-		$('#youyemian').empty();
-		var text="<a  href='javascript:;' onclick='hui()'>返回</a><br>"
-			+"<h4 class='col-sm-10'>请上传文件(文件大小限制为10MB)</h4><br><form class='col-sm-10' role='form' id='form2'>"
-		   +"<div class='form-group'>"
-		     +"<input type='file' class='btn btn-default'  name='fileUpload' />"
-		     +"<input type='button' class='btn btn-default' onclick='tranmission();tijiao()'  value='上传' />"
-		     +"</div></form>"
-		     $("#youyemian").append(text);
-	}
-}
-//上传文件信息
-function tranmission(){
-	var item=sessionStorage.getItem('item');
-	var folderid=dao[item];
-    var obj={};
-    obj.id=folderid;
-    require(folderid,"/getDangqian",userid);
-    var Basedir=ald.baseDir;
-    obj.basedir=Basedir;
-    obj.account=userid;
-   	$.ajax({
-   		type:"post",
-   		url:"/toUpload",
-   		data:JSON.stringify(obj),
-   		dataType:'json',
-   		contentType:'application/json',
-   		success:function(data){
-  
-   		},
-   		error:function(){
-   			alert('shibai')
-   		}
-   	})
-   }
- //上传文件
- function tijiao()
- {
- 	var options={
- 			type:'post',
- 			url:"/upload",
- 			dataType:'json',
- 			success:function(ret){
- 				var flag=ret.tip;
- 				if (flag=="a"){ alert('文件型号不匹配,文件上传失败');}
- 				if (flag=="b"){ alert('上传成功'); }			
- 				if (flag=="c"){ alert('大小超过限制,文件上传失败');}
- 			},
- 			error:function(ret){
- 				alert('cuowu')
- 			}
- 	}
- 	$("#form2").ajaxSubmit(options);
- }
-//建完文件夹时的刷新返回
-function hui()
-{
-	$('#youyemian').empty();
-	var text="<a href='javascript:;' onclick='fanhui()'>返回上一级</a>|<span id='dangqian'></span>"
-     +"<ul class='list-group' id='showdata'></ul>"
-     $("#youyemian").append(text);
-	var item=sessionStorage.getItem('item');
-	var pid=dao[item];
-	require(pid,'/getAllFolder',userid);
-	show(pid);
-	dangqian(pid);
-}
-//新建文件夹然后刷新返回
-function xinjian()
-{
-	
-		$.ajax({
-		type: "POST",//方法类型
-		dataType: "json",//预期服务器返回的数据类型
-		url: "/xinjian" ,//url
-		data: JSON.stringify($("#form1").serializeObject()),
-		contentType:"application/json",
-		async:false,
-		
-		});	
+	//删除文件
+	function setFileValidZero(id) {
+		reqForTip(id, '/setFileValidZero')
 		hui();
-}
-//检查文件夹名是否重复
-function check(val){
-	var item=sessionStorage.getItem('item');
-	var pid=dao[item];
-	console.log("检查文件夹"+pid);
-	var flag=0;
-	require(pid,'/getAllFolder',userid);
-	console.log("检查文件夹"+ald);
-	for(var i=0;i<ald.length;i++){
-		if(ald[i].folderName==val){
-			flag=1;
-			console.log("检查文件夹名是否重复"+ald[i].folderName+"+"+i);
+	}
+	//删除文件夹前的警告
+	function warning() {
+		var msg = "您当前文件夹下存在内容仍然选择一并删除吗？\n\n请确认！";
+		if (confirm(msg) == true) {
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
-	if(flag==0){
-		$("#warningInfo").css("color","green")
-		$("#warningInfo").html("可以使用该名字")
-	}
-	else{
-		$("#warningInfo").css("color","red")
-		$("#warningInfo").html("文件夹已存在请更改名字")
-	}
-	
-}
-//检测重命名时是否符合命名标准
-function recheck(val,id)
-{
-	require(id,'/getDangqian',userid);
-	var foldname=ald.folderName;
-	var item=sessionStorage.getItem('item');
-	var pid=dao[item];
-	//console.log("检查文件夹"+pid);
-	var flag=0;
-	require(pid,'/getAllFolder',userid);
-	//console.log("检查文件夹"+ald);
-	for(var i=0;i<ald.length;i++){
-		if(ald[i].folderName==val&&val!=foldname){
-			flag=1;
-			//console.log("检查文件夹名是否重复"+ald[i].folderName+"+"+i);
-		}
-		if(ald[i].folderName==val&&val==foldname){
-			flag=2;
-		}
-	}
-	if(flag==0){
-		$("#warningInfo").css("color","green")
-		$("#warningInfo").html("可以使用该名字")
-	}
-	else if(flag==1){
-		$("#warningInfo").css("color","red")
-		$("#warningInfo").html("文件夹已存在请更改名字")
-	}
-	else{
-		$("#warningInfo").css("color","red")
-		$("#warningInfo").html("名字与原名相同请您注意")
-	}
-}
 
-$.fn.serializeObject = function() {
-	var o = {};
-	var a = this.serializeArray();
-	$.each(a, function() {
-	if (o[this.name] !== undefined) {
-	if (!o[this.name].push) {
-	o[this.name] = [o[this.name]]; 
+	//点击文件夹显示所有子文件夹,url在这个函数中是常量‘’
+	function generate(id) {
+		url = "/getAllFolder"
+		//保存用户的操作
+		archive(id);
+		//get all folders of id 
+		require(id, url);
+		//显示参数fold 的id =id的所有子文件夹 和文件
+		show(id);
+		//显示当前文件路径
+		showPath(id);
 	}
-	o[this.name].push(this.value || '');
-	} else {
-	o[this.name] = this.value || ''; 
+
+	//get all folders/files of pid 时 请求后端数据
+	function require(pid, url) {
+		console.log(url + pid + "下的信息：");
+		$.ajax({
+			type: 'post',
+			url: url,
+			dataType: 'json',
+			data: JSON.stringify(pid),
+			contentType: "application/json",
+			async: false,
+			success: function (result) {
+				resultFromRequire = result;
+				console.log(resultFromRequire);
+			}
+		})
 	}
-	});
-	return o;
-}
+
+	//返回上一级的函数
+	function fanhui() {
+		if (topOfArchFolder == 1) {
+			alert('已经到达根目录无法再返回');
+		}
+		else {
+			topOfArchFolder--;
+			require(archiveFolderInfo[topOfArchFolder - 1].id, '/getAllFolder');
+			show(archiveFolderInfo[topOfArchFolder - 1].id);
+			showPath(archiveFolderInfo[topOfArchFolder - 1].id);
+		}
+	}
+
+	//显示当前文件路径
+	function showPath(id) {
+		var text = '';
+		text = "<a href='javascript:;'>" + archiveFolderInfo[0].folderName + "</a>";
+		for (var i = 1; i < topOfArchFolder; i++) {
+			text += ">" + "<a href='javascript:;'>" + archiveFolderInfo[i].folderName + "</a>";
+		}
+		$("#showPath").empty();
+		$("#showPath").append(text);
+	}
+
+	//存档用户操作
+	function archive(id) {
+		//get folderName of folder which id=pid ; only one object
+		var folderName;
+		if (topOfArchFolder != 0) {
+			require(id, "/getCurrentFolderInfo");
+			folderName = resultFromRequire.folderName;
+		} else {
+			folderName = "root";
+		}
+		//archive Folder Info  指针 存在sessionStorage 存的内容是{"pid":"","pfolderName":""}
+		var temp = { "id": "", "folderName": "" };
+		temp.id = id;
+		temp.folderName = folderName;
+		archiveFolderInfo[topOfArchFolder] = temp;
+		console.log("archive archiveFolderInfo " + topOfArchFolder + "的：")
+		console.log(archiveFolderInfo[topOfArchFolder])
+		topOfArchFolder++;
+	}	
+
+	//回去主页
+	function hui() {
+		$('#youyemian').empty();
+		var text = "<a href='javascript:;' onclick='fanhui()'>返回上一级</a>|<span id='showPath'></span>"
+			+ "<ul class='list-group' id='showdata'></ul>"
+		$("#youyemian").append(text);
+		var pid = archiveFolderInfo[topOfArchFolder - 1].id;
+		require(pid, '/getAllFolder');
+		show(pid);
+		showPath(pid);
+	}
+		
+	$.fn.serializeObject = function () {
+		var o = {};//o is a object-->
+		var a = this.serializeArray();//this是$("#registForm")对象-->
+		$.each(a, function () {
+			if (o[this.name] != undefined && this.name != "password") {//有name相同的项的时候-->
+				//Array.prototype.push,判断是不是存的[]-->
+				if (!o[this.name].push) {
+					o[this.name] = [o[this.name]];
+				}
+				//Appends the arguments to the end of the array-->
+				o[this.name].push(this.value || '');
+			} else {
+				if (this.name !== "repassword") {
+					o[this.name] = this.value || '';
+				}
+
+			}
+		});
+		console.log(o);
+		return o;
+	};
 </script>
+<script type="text/javascript" src="js/updatePsnlInfo.js"></script>
+<script type="text/javascript" src="js/newFolder.js"></script>
+<script type="text/javascript" src="js/uploadRSPage.js"></script>
 
 </html>

@@ -12,10 +12,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +26,13 @@ import com.alibaba.fastjson.JSON;
 
 import cn.cs.fileManager.FileManagerApplication;
 import cn.cs.fileManager.dao.mapper.FmUserMapper;
+import cn.cs.fileManager.dao.mapper.FmUserRoleMapper;
+import cn.cs.fileManager.dao.model.FmFolder;
 import cn.cs.fileManager.dao.model.FmUser;
 import cn.cs.fileManager.dao.model.FmUserExample;
 import cn.cs.fileManager.dao.model.FmUserExample.Criteria;
+import cn.cs.fileManager.dao.model.FmUserRole;
+import cn.cs.fileManager.dao.model.FmUserRoleExample;
 import cn.cs.fileManager.dto.FmUserDTO;
 import cn.cs.fileManager.form.LoginForm;
 import cn.cs.fileManager.form.LoginUser;
@@ -41,11 +47,25 @@ public class UserService implements IUserService {
 
     @Autowired
     private FmUserMapper fmUserMapper;
+    
+    @Autowired
+    private FolderService folderService;
+    
+    @Autowired
+    private FmUserRoleMapper fmUserRoleMapper;
+    
+    private BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
   
     private static final Logger logger=LoggerFactory.getLogger(UserService.class);
-   
-    final Base64.Decoder decoder = Base64.getDecoder();
-    final Base64.Encoder encoder = Base64.getEncoder();
+	
+    @Value("${custom.AdminRole}")
+    private  long adminRole;
+	
+    @Value("${custom.NormalRole}")
+    private  long normalRole;
+	
+    @Value("${custom.RootFilePath}")
+    private  String rootPath;
    
     
    
@@ -57,13 +77,7 @@ public class UserService implements IUserService {
     public List<FmUser> getUserList() {
         logger.info("查找所有用户信息");
         FmUserExample fe = new FmUserExample();
-        List<FmUser> list = fmUserMapper.selectByExample(fe);
-        for(int i=0;i<list.size();i++)
-        {
-            String password=list.get(i).getPassword();
-            password=new String(decoder.decode(password));
-            list.get(i).setPassword(password);
-        }
+        List<FmUser> list = fmUserMapper.selectByExample(fe);       
         return list;
     }
     
@@ -103,14 +117,7 @@ public class UserService implements IUserService {
         }
                   
         List<FmUser> list = fmUserMapper.selectByExample(fe);
-          
-        
-        for(int i=0;i<list.size();i++)
-        {
-            String password=list.get(i).getPassword();
-            password=new String(decoder.decode(password));
-            list.get(i).setPassword(password);
-        }
+               
         
         return list;
     }
@@ -119,7 +126,7 @@ public class UserService implements IUserService {
     
     @Override
     @Cacheable(value = "cn.cs.fileManager.dao.model.FmUser", key = "#root.targetClass + #root.methodName")
-    public long checkUserName(String login_name) {
+    public long getNumsOfLoginName(String login_name) {
         FmUserExample fe = new FmUserExample();
         Criteria criteria = fe.createCriteria();
         criteria.andLoginNameEqualTo(login_name);
@@ -131,52 +138,54 @@ public class UserService implements IUserService {
     @Override
     @Cacheable(value = "cn.cs.fileManager.dao.model.FmUser", key = "#root.targetClass + #root.methodName")
     public boolean register(FmUser u) {
-        String password=u.getPassword();
-        try {
-            byte[] textByte = password.getBytes("UTF-8");
-            password=encoder.encodeToString(textByte);
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            logger.debug("密码base64加密错误");
-        }
+    	
+		String password = passwordEncoder.encode(u.getPassword());
         u.setPassword(password);
+        u.setLastLoginDate(new Date());     
+        u.setValid("1");
         int result=fmUserMapper.insert(u);
         if(result>0)
-            return true;
+        {
+        	FmUserExample fe = new FmUserExample();
+            Criteria criteria = fe.createCriteria();
+            criteria.andLoginNameEqualTo(u.getLoginName());
+            List<FmUser> list = fmUserMapper.selectByExample(fe);
+            
+            //插入用户角色
+            logger.info("插入用户角色");
+            FmUserRole record=new FmUserRole();
+            record.setUserId(list.get(0).getId());
+            record.setRoleId(normalRole);
+            record.setUserRoleStatus("1");
+            int flag=fmUserRoleMapper.insert(record);
+            
+            //为新用户新建文件夹
+            FmFolder folder=new FmFolder();
+            folder.setFolderName(u.getLoginName());
+            String basedir = rootPath+"\\"+u.getLoginName();
+            folder.setBaseDir(basedir);            
+            folder.setpId(0l);
+            folder.setRegAccount(list.get(0).getId());            
+            int flag2=folderService.newFolder(folder);
+            
+            if(flag>0 && flag2>0)
+            {
+            	return true;
+            }
+            else
+            	return false;
+        }
         else
             return false;
         
     }
     
-    @Override
-    @Cacheable(value = "cn.cs.fileManager.dao.model.FmUser", key = "#root.targetClass + #root.methodName")
-    public boolean updateTime(FmUser u) {
-        FmUser record=new FmUser();
-        record.setLastLoginDate(new Date());
-        FmUserExample fe = new FmUserExample();
-        Criteria criteria = fe.createCriteria();
-        criteria.andLoginNameEqualTo(u.getLoginName());
-        int result=fmUserMapper.updateByExampleSelective(record, fe);
-        if(result>0)
-            return true;
-        else
-            return false;
-    }
+   
     
     @Override
     @Cacheable(value = "cn.cs.fileManager.dao.model.FmUser", key = "#root.targetClass + #root.methodName")
-    public boolean update(FmUser record) {
-        String password=record.getPassword();
-        if(password!=null)
-        {
-            try {
-                byte[] textByte = password.getBytes("UTF-8");
-                password=encoder.encodeToString(textByte);
-            } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
-                logger.debug("密码base64加密错误");
-            }           
-        }
+    public boolean updateUserInfo(FmUser record) {
+        String password=passwordEncoder.encode(record.getPassword());      
         record.setPassword(password);
         FmUserExample fe = new FmUserExample();
         Criteria criteria = fe.createCriteria();

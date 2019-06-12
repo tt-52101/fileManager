@@ -32,16 +32,17 @@ public interface IFolderService {
 	
 	/*???????
 	 * 新建的文件夹得信息存在String里面?*/
-	void newFolder(String xulie);
+	int newFolder(FmFolder folder);
 	/*
 	 * ??????
 	 * 参数需要先赋值成原值，改动的再在基础上改
 	 */
-	void updateFolder(String canshu);
-	
+	void updateFolder(FmFolder fmfolder);
 	
 	
 	//List<FmFolder> getNovalid(String owner);
 	List<FmFolder> getNovalid(long userid,boolean isNormal);
+	
+	boolean deleteFolderRecord(long folderid);
 }
 

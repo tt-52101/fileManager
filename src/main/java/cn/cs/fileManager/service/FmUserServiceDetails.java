@@ -38,9 +38,8 @@ public class FmUserServiceDetails implements UserDetailsService {
 	        LoginForm loginFrom = JSON.parseObject(json, LoginForm.class);
 	        FmUserExample fe = new FmUserExample();
 	        Criteria criteria = fe.createCriteria();	       
-	        criteria.andLoginNameEqualTo(loginFrom.getUserName());	       
-	        List<FmUser> list=fmUserMapper.selectByExample(fe);
-	        
+	        criteria.andLoginNameEqualTo(loginFrom.getLoginName());	       
+	        List<FmUser> list=fmUserMapper.selectByExample(fe);	        
 	        if(list.size()==1)
 	        {
 	            FmUser u=list.get(0);
@@ -48,9 +47,6 @@ public class FmUserServiceDetails implements UserDetailsService {
 	            FmUserDTO userDTO = new FmUserDTO();
 	            BeanUtils.copyProperties(u,userDTO);
 	            userDTO.setRemember(loginFrom.getRemember());	                      
-	            userDTO.setUserName(u.getLoginName());
-	            userDTO.setUserPassword(u.getPassword());
-	            userDTO.setLoginName(u.getLoginName());
 	            logger.info("get user entity "+userDTO.toString()+"password :"+userDTO.getPassword());
 	            return userDTO;
 	        }
@@ -60,6 +56,4 @@ public class FmUserServiceDetails implements UserDetailsService {
 	        }
 	      
 	    }
-
-
 }

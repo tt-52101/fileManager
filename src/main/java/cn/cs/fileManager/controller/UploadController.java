@@ -1,109 +1,85 @@
 package cn.cs.fileManager.controller;
+
 import java.io.File;
-import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import cn.cs.fileManager.dao.mapper.FmFileMapper;
-import cn.cs.fileManager.dao.mapper.FmFileTypeMapper;
-import cn.cs.fileManager.dao.model.FmFile;
-import cn.cs.fileManager.dao.model.FmFileType;
-
-import cn.cs.fileManager.dao.model.FmUser;
+import cn.cs.fileManager.dao.model.FmFolder;
+import cn.cs.fileManager.service.IFolderService;
 import cn.cs.fileManager.service.IUploadService;
-import cn.cs.fileManager.service.IUserService;
-import cn.cs.fileManager.service.UploadService;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 @RestController
 @Api(value = "uploadController")
 public class UploadController {
 	@Autowired
+	private IUploadService uploadService;
+	@Autowired
+	private IFolderService folderService;
+	private static final Logger logger = LoggerFactory.getLogger(UploadController.class);
 
-	private  IUploadService up;
-	 public  long  folderid;
-	 public  String fmFolder_baseDir;
-	 public  long account;
-	 
-	 @ApiOperation(value= "取得当前文件夹的信息",notes="")
-	 @RequestMapping(value= {"/toUpload"},method= {RequestMethod.POST}) 
-	    public JSONObject  fanhui(@RequestBody String tranmission)
-	    {
-	    	JSONObject  a=JSON.parseObject(tranmission);
-	    	folderid=Long.parseLong(a.getString("id"));
+	@ApiOperation(value = "上传文件", notes = "")
+	@RequestMapping(value = { "/upload" }, method = { RequestMethod.POST }, produces = {
+			"application/json;charset=utf-8" })
+	public JSONObject upload(@RequestParam(value = "fileUpload", required = false) MultipartFile fileUpload,
+			@RequestParam(value = "pid") long pid) {
+		
+		FmFolder fmFolder = this.folderService.getINfoOf(pid);
+		String fileName = fileUpload.getOriginalFilename();
 
-	    	fmFolder_baseDir=a.getString("basedir");
-	    	account=Long.parseLong(a.getString("account"));
-	    	System.out.println(folderid+fmFolder_baseDir);
-	    	JSONObject  b=new JSONObject();
-	    	b.put("tip", "II");
-	    	return b;
-	    }
-	 
+		
 
-	 @ApiOperation(value= "上传文件",notes="")
-    @RequestMapping(value= {"/upload"},method= {RequestMethod.POST},produces= {"application/json;charset=utf-8"})
-    public JSONObject  upload(@RequestBody MultipartFile fileUpload)
-    {
-   	    String UUIDfileName;
-        String fileName = fileUpload.getOriginalFilename();
-        System.out.println(fileName); 
-        //String suffixName;
-       String suffixName = fileName.substring(fileName.lastIndexOf("."));
-        long fileSize =fileUpload.getSize();
-        fileSize=(int)fileSize/1000;
-        System.out.println(suffixName);
-        //重新生成文件名
-        UUIDfileName = UUID.randomUUID()+suffixName;
-        System.out.println(UUIDfileName);
-        //指定本地文件夹存储图片	
-        //System.out.println(username);
-        String filePath = fmFolder_baseDir+"/";
-        JSONObject result=new JSONObject();
-        System.out.println(fileSize);
-        try {
-            
-        	try { this.up.getFileTypeList(suffixName); }
-        	catch (Exception e) 
-        	{
-        		System.out.println("文件型号不匹配");         
-        	result.put("tip", "a");
-        	return result;
-        	}
-            if (fileSize<=10000) 
-            {
-            	System.out.println(fileSize);
-            	fileUpload.transferTo(new File(filePath+UUIDfileName));
-            	up.insert(fileName,fileSize,UUIDfileName,folderid,account);
-            	result.put("tip", "b");
-            	return result;
-            	}
-            else
-            {
-            	System.out.println("文件大小超过限制");
-            	result.put("tip", "c");
-            	return result;
-            	}
+		// String suffixName;
+		String suffixName = fileName.substring(fileName.lastIndexOf("."));
+		long fileSize = fileUpload.getSize();
+		fileSize = (int) fileSize / 1000;
 
-                } catch (Exception e) {
-            e.printStackTrace();
-        //    return new Massage(-1,"fail to upload");
-            return null;
-        } 
-    }
 
-        
-        
-  
+		// 重新生成文件名
+		String UUIDfileName = UUID.randomUUID() + suffixName;
+
+		// 指定本地文件夹存储图片
+
+		String filePath = fmFolder.getBaseDir() + "/";
+		JSONObject result = new JSONObject();
+		try {
+
+			try {
+				this.uploadService.getFileTypeList(suffixName);
+			} catch (Exception e) {
+				
+				result.put("tip", "a");
+				return result;
+			}
+
+			if (fileSize <= 10000) {
+				
+				fileUpload.transferTo(new File(filePath + UUIDfileName));
+				uploadService.insert(fileName, fileSize, UUIDfileName, pid, fmFolder.getRegAccount());
+				result.put("tip", "b");
+				return result;
+			} else {
+				System.out.println("文件大小超过限制");
+				result.put("tip", "c");
+				return result;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return null;
+		}
+	}
+
 }

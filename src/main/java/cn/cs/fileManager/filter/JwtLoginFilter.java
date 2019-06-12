@@ -12,13 +12,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeansException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.alibaba.fastjson.JSON;
@@ -37,8 +39,10 @@ import cn.cs.fileManager.dao.model.FmUserExample.Criteria;
 import cn.cs.fileManager.dto.FmUserDTO;
 import cn.cs.fileManager.form.LoginForm;
 import cn.cs.fileManager.form.LoginUser;
+import cn.cs.fileManager.service.IUserService;
 import cn.cs.fileManager.service.UserService;
-import cn.cs.fileManager.vo.LoginSuccessVO;
+import cn.cs.fileManager.vo.FmUserVO;
+
 
 
 
@@ -52,6 +56,8 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter{
 	    private JwtTokenUtil jwtTokenUtil;
 	 @Autowired
 	    private FmUserMapper fmUserMapper;
+
+	 
 	 //身份验证
 	    private AuthenticationManager authenticationManager;
 	    
@@ -78,11 +84,14 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter{
 	            //source ,target
 	            //Copy the property values of the given source bean into the target bean. 
 	            BeanUtils.copyProperties(loginForm, loginUser);
-	            logger.info("get "+loginUser.toString());
-	            //principal credentials authorities 
+	            logger.info("用用户名和密码验证 "+loginUser.toString());
+	            /**UsernamePasswordAuthenticationToken 参数说明：
+	             * Object principal（主要的身份认证信息），Object credentials（用于证明principal是正确的信息，比如密码）
+	             * */ 
 	            return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(JSON.toJSONString(loginUser), loginForm.getPassword(), new ArrayList<>()));
 	        } catch (IOException e) {
 	        	logger.info("数据读取错误");
+	        	
 	            ResponseUtil.write(response, ResultUtil.error("数据读取错误"));
 	        }
 	        return null;
@@ -104,35 +113,29 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter{
 	        if (jwtTokenUtil == null) {
 	            jwtTokenUtil = (JwtTokenUtil) SpringUtils.getBean("jwtTokenUtil");
 	        }
-	        if (fmUserMapper == null) {
+	        if(fmUserMapper == null) {
 	        	fmUserMapper = (FmUserMapper) SpringUtils.getBean("fmUserMapper");
 	        }
+	       
 	      //更新最近一次登陆时间
-	        FmUserExample fe=new FmUserExample();	        
+	        FmUserExample fe=new FmUserExample();
 	        Criteria criteria = fe.createCriteria();
 	        criteria.andIdEqualTo(userDTO.getId());
 	        FmUser user = new FmUser();
-	        user.setId(userDTO.getId());
 	        user.setLastLoginDate(new Date());
-	        int result=fmUserMapper.updateByExampleSelective(user, fe);
+	        int result=fmUserMapper.updateByExampleSelective(user,fe);
+	       
 	        if(result>0)
 	        {
 	        	logger.info("update time correctly");
 	        }
 	        String token = jwtTokenUtil.createToken(userDTO);
+	        //设置上下文
+	        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(userDTO, null, userDTO.getAuthorities()));
 	        //将token放置请求头返回
 	        response.addHeader(jwtTokenUtil.getTokenHeader(), jwtTokenUtil.getTokenPrefix() + token);
-	        LoginSuccessVO loginSuccessVO = new LoginSuccessVO();
-	        /**
-	    	 * Copy the property values of the given source bean into the target bean.
-	    	 * <p>Note: The source and target classes do not have to match or even be derived
-	    	 * from each other, as long as the properties match. Any bean properties that the
-	    	 * source bean exposes but the target bean does not will silently be ignored.
-	    	 * <p>This is just a convenience method. For more complex transfer needs,
-	    	 * consider using a full BeanWrapper.	    
-	    	 */
-	        BeanUtils.copyProperties(userDTO, loginSuccessVO);
-	        ResponseUtil.write(response, ResultUtil.success(loginSuccessVO));
+
+	        ResponseUtil.write(response, ResultUtil.success());
 	    }
 
 	    /**

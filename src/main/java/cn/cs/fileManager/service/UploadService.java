@@ -16,7 +16,7 @@ import cn.cs.fileManager.dao.model.FmFileTypeExample.Criteria;
 import cn.cs.fileManager.dao.model.FmUser;
 import cn.cs.fileManager.dao.model.FmUserExample;
 @Service
-public  class UploadService   implements IUploadService{
+public  class UploadService implements IUploadService{
     @Autowired
     private FmFileMapper fmFileMapper;
     
