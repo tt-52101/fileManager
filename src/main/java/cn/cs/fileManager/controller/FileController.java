@@ -61,7 +61,7 @@ public class FileController{
 			logger.info(currentUserDetails.toString());
 			
 			List<String> roles=currentUserDetails.getRoles();
-			boolean isNormal=!roles.contains("ROLE_ADMIN");
+			boolean isNormal=!roles.contains("ADMIN");
 			    
 			long userid=currentUserDetails.getId();
 		    List<FmFile> list = this.fileservice.getAllFile(userid, temp_pid,isNormal);
@@ -121,7 +121,7 @@ public class FileController{
 		 long userid=currentUserDetails.getId();
 		 logger.info("get files under "+userid);
 		 List<String> roles=currentUserDetails.getRoles();
-		 boolean isNormal=!roles.contains("ROLE_ADMIN");
+		 boolean isNormal=!roles.contains("ADMIN");
 		 List<FmFile> list =this.fileservice.getNovalid(userid,isNormal);
 		 return list;
 	 }

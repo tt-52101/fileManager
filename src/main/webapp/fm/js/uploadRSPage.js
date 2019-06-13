@@ -5,7 +5,8 @@ function renderUploadRSPage() {
         alert('对不起系统根目录下禁止新建文件夹与上传文件');
     }
     else {
-        var pid = archiveFolderInfo[topOfArchFolder - 1].id;
+        
+        
         $('#youyemian').empty();
         var text =
         "<fieldset><legend>上传文件</legend></fieldset>"
@@ -14,10 +15,10 @@ function renderUploadRSPage() {
             + "<label for='folder' class='col-sm-2 control-label'>上传到文件夹:</label>"
             + "<div class='col-sm-10'>"
             + "<input type='text' class='form-control' name='folder' value="+archiveFolderInfo[topOfArchFolder - 1].folderName+" disabled='true'/></div></div>"
+            + "<input type='hidden' name='pid' value='" + archiveFolderInfo[topOfArchFolder - 1].id + "'></input>"
             + "<div class='form-group'>"
             + "<label for='fileUpload' class='col-sm-2 control-label'>文件:</label>"
             + "<div class='col-sm-10'>"
-            + "<input type='hidden' name='pid' value=" + pid + "/>"
             + "<input type='file' class='btn btn-default'  name='fileUpload' /></div></div>"
             
             + "<div class='form-group'>"

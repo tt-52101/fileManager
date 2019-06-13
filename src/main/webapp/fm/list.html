@@ -28,7 +28,7 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#">网盘测试版</a>
+				<a class="navbar-brand" href="#">测试版</a>
 			</div>
 			<div class="collapse navbar-collapse" id="myNavbar">
 				<ul class="nav navbar-nav">
@@ -43,7 +43,7 @@
 	<div class="container-fluid" style="height:500px">
 		<div class="row">
 			<div class="col-sm-2">
-				<ul class="nav nav-pills nav-stacked">
+				<ul class="nav nav-pills nav-stacked" id="menu">
 					<li><a href="javascript:;" onclick=hui()><span class="glyphicon glyphicon-home">
 								主页</span></a></li>
 					<li><a href="javascript:;" onclick=renderNewFolderForm()><span
@@ -54,10 +54,9 @@
 								上传文件</span></a></li>
 					<li><a href="javascript:;" onclick=recycle()><span class="glyphicon glyphicon-trash">
 								回收站</span></a></li>
-					<li><a href="javascript:;"><span class="glyphicon glyphicon-user" onclick=renderPsnlInfo()>
+					<li><a href="javascript:;" onclick=renderPsnlInfo()><span class="glyphicon glyphicon-user" >
 								修改个人信息</span></a></li>
-					<!-- <li><a href="javascript:;"><span class="glyphicon glyphicon-user" onclick=renderPsnlInfo()>
-							修改个人信息</span></a></li> -->
+
 				</ul>
 			</div>
 			<div class="col-sm-10" id="youyemian">
@@ -67,7 +66,7 @@
 		</div>
 	</div>
 
-	<div class="jumbotron text-center" style="margin-bottom:0;height:40px">
+	<div class="jumbotron text-center" style="margin-bottom:0;height:30px">
 		<p>design by Luna</p>
 	</div>
 
@@ -96,7 +95,26 @@
 	var pdfContent = $('#pdfContent');
 
 	$(function () {
+		$.ajax({
+            type: "POST",//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: "/isNormal",//url
+            contentType: "application/json",
+            async: false,
+            success: function (result) {
 
+                if (result.code == 0) {
+				   if(result.data=="Admin")
+				   {
+					var text="<li><a href='/fm/allusers.html' ><span class='glyphicon glyphicon-cog'>&nbsp;管理所有用户</span></a></li>";
+					$("#menu").append(text);
+				   }
+                }else{
+					window.location.href= "/fm/error.html";
+				}
+
+            }
+        });
 		obj = {};
 
 		generate(0);
@@ -521,5 +539,6 @@
 <script type="text/javascript" src="js/updatePsnlInfo.js"></script>
 <script type="text/javascript" src="js/newFolder.js"></script>
 <script type="text/javascript" src="js/uploadRSPage.js"></script>
+
 
 </html>

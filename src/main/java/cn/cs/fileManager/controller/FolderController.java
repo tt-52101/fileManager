@@ -56,21 +56,12 @@ public class FolderController {
 			}
 			
 			List<String> roles=currentUserDetails.getRoles();
-			boolean isNormal=!roles.contains("ROLE_ADMIN");
+			boolean isNormal=!roles.contains("ADMIN");
 			    
 			long userid=currentUserDetails.getId();
 		    List<FmFolder> list = this.folderservice.getAllFolder(userid, temp_pid, isNormal);
 		    return list;
 	    }
-	 
-//	 @RequestMapping(value = { "/getPFolder" }, method = { RequestMethod.POST },produces = {"application/json; charset=utf-8"})
-//	 public long getParentFolder(@RequestBody String param) {
-//		    JSONObject temp=JSON.parseObject(param);
-//		    long id=Long.parseLong(temp.getString("id"));
-//		    long userid=Long.parseLong(temp.getString("userid"));
-//	        long pid = this.folderservice.getPFolder(userid,id,true);
-//	        return pid;
-//	    }
 	 
 	 @RequestMapping(value = { "/getCurrentFolderInfo" }, method = { RequestMethod.POST },produces = {"application/json; charset=utf-8"})
 	 public FmFolder getCurrentFolderInfo(@RequestBody String pid) {		  
@@ -107,7 +98,7 @@ public class FolderController {
 	 {
 		 long userid=currentUserDetails.getId();
 		 List<String> roles=currentUserDetails.getRoles();
-		 boolean isNormal=!roles.contains("ROLE_ADMIN");
+		 boolean isNormal=!roles.contains("ADMIN");
 		 List<FmFolder> list = this.folderservice.getNovalid(userid, isNormal);
 	        return list;
 	 }
@@ -149,7 +140,7 @@ public class FolderController {
 
 		FmFolder fmFolder = this.folderservice.getINfoOf(Long.parseLong(id));
 		List<String> roles = currentUserDetails.getRoles();
-		boolean isNormal = !roles.contains("ROLE_ADMIN");
+		boolean isNormal = !roles.contains("ADMIN");
 		List<FmFile> list = this.fileservice.getAllFile(currentUserDetails.getId(), Long.parseLong(id), isNormal);
 		String basedir = fmFolder.getBaseDir();
 		try {

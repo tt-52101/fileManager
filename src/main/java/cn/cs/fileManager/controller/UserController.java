@@ -46,6 +46,7 @@ import cn.cs.fileManager.dto.FmUserDTO;
 import cn.cs.fileManager.form.LoginForm;
 import cn.cs.fileManager.form.NewForRegister;
 import cn.cs.fileManager.service.FmUserServiceDetails;
+import cn.cs.fileManager.service.IUserRoleService;
 import cn.cs.fileManager.service.IUserService;
 
 @RestController
@@ -55,6 +56,8 @@ public class UserController {
     private IUserService userService;
     @Autowired
     private FmUserServiceDetails userServiceDetails;
+    @Autowired
+    private IUserRoleService roleService;
     
     private static final Logger logger=LoggerFactory.getLogger(UserController.class);
     
@@ -66,15 +69,16 @@ public class UserController {
             @RequestParam String searchval,@RequestParam( value="order[column]") int column,
             @RequestParam( value="order[dir]") String dir,
             HttpServletRequest request)  {
-            
-        HttpSession session = request.getSession(false);
-        logger.info("start:"+start+"  length: "+length+"  draw: "+draw+"  searchval: "+searchval+" order by "+column+" "+dir);
-
-        FmUser u=(FmUser) session.getAttribute("user");
-        //&& u.getType().equals("0")
-        if(u!=null && u.getValid().equals("1") )
+    
+        currentUserDetails =  (FmUserDTO) SecurityContextHolder.getContext()
+	    	    .getAuthentication()
+	    	    .getPrincipal();
+        List<String> roles=currentUserDetails.getRoles();
+    	
+		boolean isAdmin=roles.contains("ADMIN");
+        
+        if(isAdmin)
         {
-            logger.info("获得查询所有用户信息权限");
             PageHelper.startPage(start, length);
             List<FmUser> users;
             if(searchval!="")
@@ -110,16 +114,34 @@ public class UserController {
     
     
     @RequestMapping(value = {"/register"},method = {RequestMethod.POST}) 
-    public ResultUtil register(@RequestBody NewForRegister param,HttpServletRequest request)  {
-        logger.info("注册"+param.toString());
-        FmUser u=new FmUser();
-        BeanUtils.copyProperties(param, u);                  
-        if(this.userService.register(u)) {                 
+    public ResultUtil register(@RequestBody FmUser param,HttpServletRequest request)  {              
+        if(this.userService.register(param)) {
         	return ResultUtil.success("注册成功");
         }else
         {                     
         	return ResultUtil.error("注册出了问题");
         }       
+    }
+    
+    @RequestMapping(value = {"/isNormal"},method = {RequestMethod.POST}) 
+    public ResultUtil isNormal()  {
+    	try {
+	    	currentUserDetails =  (FmUserDTO) SecurityContextHolder.getContext()
+		    	    .getAuthentication()
+		    	    .getPrincipal();
+	    	List<String> roles=currentUserDetails.getRoles();
+	    	System.out.print(roles.toString());
+			boolean isNormal=!roles.contains("ADMIN");
+			if(isNormal) {                 
+	        	return ResultUtil.success("User");
+	        }else{                     
+	        	return ResultUtil.success("Admin");
+	        }
+    	}catch(Exception e)
+    	{
+    		return ResultUtil.error("wrong");
+    	}
+
     }
     
     @RequestMapping(value = {"/getpsnlmsg"},method = {RequestMethod.POST}) 
@@ -134,9 +156,15 @@ public class UserController {
     
     @RequestMapping(value = {"/updatePsnlInfo"},method = {RequestMethod.POST})  
     public ResultUtil update(@RequestBody FmUser record,HttpServletRequest request)  {
+    	boolean flag0=true;
+    	if(record.getRoles()!=null && !record.getRoles().isEmpty()) {
+    		 flag0=this.roleService.updateRoles(record);
+    	}
         boolean flag=this.userService.updateUserInfo(record);
-       
-        if(flag) {
+        currentUserDetails =  (FmUserDTO) SecurityContextHolder.getContext()
+	    	    .getAuthentication()
+	    	    .getPrincipal();
+        if(flag && flag0 &&currentUserDetails.getId()==record.getId()) {
         	LoginForm user =new LoginForm();
             BeanUtils.copyProperties(record, user);
             UserDetails userDTO=userServiceDetails.loadUserByUsername(JSON.toJSONString(user));

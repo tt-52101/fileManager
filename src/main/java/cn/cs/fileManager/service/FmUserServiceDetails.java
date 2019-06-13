@@ -43,11 +43,9 @@ public class FmUserServiceDetails implements UserDetailsService {
 	        if(list.size()==1)
 	        {
 	            FmUser u=list.get(0);
-	            logger.info(u.toString());
 	            FmUserDTO userDTO = new FmUserDTO();
 	            BeanUtils.copyProperties(u,userDTO);
 	            userDTO.setRemember(loginFrom.getRemember());	                      
-	            logger.info("get user entity "+userDTO.toString()+"password :"+userDTO.getPassword());
 	            return userDTO;
 	        }
 	        else

@@ -20,4 +20,5 @@ public interface IUserService {
     boolean register(FmUser u);	
 	boolean updateUserInfo(FmUser record);
 	List<FmUser> getUsersBySth(String attr,String val,int column,String dir);
+	FmUser getInfoOf(long id);
 }

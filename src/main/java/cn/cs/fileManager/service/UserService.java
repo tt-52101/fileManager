@@ -51,8 +51,9 @@ public class UserService implements IUserService {
     @Autowired
     private FolderService folderService;
     
+    
     @Autowired
-    private FmUserRoleMapper fmUserRoleMapper;
+    private IUserRoleService roleService;
     
     private BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
   
@@ -90,32 +91,23 @@ public class UserService implements IUserService {
         case 0:
             fe.setOrderByClause("id "+dir);
             break;
-        case 5:
-            fe.setOrderByClause("type "+dir);
-            break;          
+        case 1:
+            fe.setOrderByClause("login_name "+dir);
+            break; 
+        case 2:
+            fe.setOrderByClause("name "+dir);
+            break; 
         case 6:
             fe.setOrderByClause("valid "+dir);          
             break;        
         } 
         Criteria criteria = fe.createCriteria();
        
-        if(val!=null)
-        {
-            logger.info("查找"+attr+" like "+val);
-            switch(attr){
-            case "loginName":
-                criteria.andLoginNameLike('%'+val+'%');
-                break;
-            case "mobileNumber":
-                criteria.andMobileNumberLike('%'+val+'%');
-                break;          
-            case "valid":
-                criteria.andValidEqualTo(val);
-                break;
-          
+        if(val!=null && val!="")
+        { 
+            criteria.andLoginNameLike('%'+val+'%');
          }            
-        }
-                  
+                          
         List<FmUser> list = fmUserMapper.selectByExample(fe);
                
         
@@ -150,15 +142,9 @@ public class UserService implements IUserService {
             Criteria criteria = fe.createCriteria();
             criteria.andLoginNameEqualTo(u.getLoginName());
             List<FmUser> list = fmUserMapper.selectByExample(fe);
-            
-            //插入用户角色
-            logger.info("插入用户角色");
-            FmUserRole record=new FmUserRole();
-            record.setUserId(list.get(0).getId());
-            record.setRoleId(normalRole);
-            record.setUserRoleStatus("1");
-            int flag=fmUserRoleMapper.insert(record);
-            
+            list.get(0).setRoles(u.getRoles());
+            //用户角色
+            this.roleService.addUserRole(list.get(0));
             //为新用户新建文件夹
             FmFolder folder=new FmFolder();
             folder.setFolderName(u.getLoginName());
@@ -166,9 +152,9 @@ public class UserService implements IUserService {
             folder.setBaseDir(basedir);            
             folder.setpId(0l);
             folder.setRegAccount(list.get(0).getId());            
-            int flag2=folderService.newFolder(folder);
+            int flag=folderService.newFolder(folder);
             
-            if(flag>0 && flag2>0)
+            if(flag>0)
             {
             	return true;
             }
@@ -185,8 +171,10 @@ public class UserService implements IUserService {
     @Override
     @Cacheable(value = "cn.cs.fileManager.dao.model.FmUser", key = "#root.targetClass + #root.methodName")
     public boolean updateUserInfo(FmUser record) {
-        String password=passwordEncoder.encode(record.getPassword());      
-        record.setPassword(password);
+    	if(record.getPassword()!=null && record.getPassword()!=""){
+    		String password=passwordEncoder.encode(record.getPassword());      
+            record.setPassword(password);
+    	}
         FmUserExample fe = new FmUserExample();
         Criteria criteria = fe.createCriteria();
         criteria.andIdEqualTo(record.getId());
@@ -196,7 +184,15 @@ public class UserService implements IUserService {
         else
             return false;
     }
-
+    @Override
+    @Cacheable(value = "cn.cs.fileManager.dao.model.FmUser", key = "#root.targetClass + #root.methodName")
+    public FmUser getInfoOf(long id) {
+    	FmUserExample fe = new FmUserExample();
+        Criteria criteria = fe.createCriteria();
+        criteria.andIdEqualTo(id);
+        List<FmUser> list=fmUserMapper.selectByExample(fe);
+        return list.get(0);
+    }
 	
 	
 
